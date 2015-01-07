@@ -1,0 +1,21 @@
+Source: kodi-pvr-rtl-radiofm
+Priority: extra
+Maintainer: Alwin Esch <@kodi.tv>
+Build-Depends: debhelper (>= 8.0.0), cmake, xbmc-addon-dev, libxbmcplatform-dev, xbmc-audio-dev, librtlsdr-dev
+Standards-Version: 3.9.2
+Section: libs
+Homepage: http://kodi.tv
+
+Package: kodi-pvr-rtl-radiofm-template
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: PVR client to connect RTL-SDR as FM Radio to KODI
+
+Package: kodi-pvr-rtl-radiofm-template-dbg
+Section: debug
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: debug symbols for RTL-SDR FM radio Receiver for KODI
+ contains the debug symbols for kodi-pvr-rtl-radiofm-template
+

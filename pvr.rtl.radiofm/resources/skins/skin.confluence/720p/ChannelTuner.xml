@@ -1,0 +1,268 @@
+<window>
+  <defaultcontrol always="false">5</defaultcontrol>
+  <allowoverlay>yes</allowoverlay>
+  <controls>
+    <include>CommonSettingsBackground</include>
+    <include>CommonMediaPlayingBackground</include>
+    <control type="group">
+      <posx>90</posx>
+      <posy>250</posy>
+      <animation type="WindowOpen" reversible="false">
+        <effect type="zoom" start="80" end="100" center="640,360" easing="out" tween="back" time="300" />
+        <effect type="fade" start="0" end="100" time="300" />
+      </animation>
+      <animation type="WindowClose" reversible="false">
+        <effect type="zoom" start="100" end="80" center="640,360" easing="in" tween="back" time="300" />
+        <effect type="fade" start="100" end="0" time="300" />
+      </animation>
+      <control type="image">
+        <posx>0</posx>
+        <posy>0</posy>
+        <width>1100</width>
+        <height>240</height>
+        <texture border="20">DialogBack.png</texture>
+      </control>
+      <control type="image">
+        <description>LOGO</description>
+        <posx>30</posx>
+        <posy>15</posy>
+        <width>220</width>
+        <height>80</height>
+        <aspectratio>keep</aspectratio>
+        <texture>Confluence_Logo.png</texture>
+      </control>
+      <control type="image">
+        <posx>268</posx>
+        <posy>10</posy>
+        <width>790</width>
+        <height>218</height>
+        <texture border="5">black-back2.png</texture>
+      </control>
+      <control type="image">
+        <posx>268</posx>
+        <posy>10</posy>
+        <width>804</width>
+        <height>70</height>
+        <aspectratio>stretch</aspectratio>
+        <texture>GlassTitleBar.png</texture>
+      </control>
+      <control type="label" id ="10">
+        <description>header label</description>
+        <posx>300</posx>
+        <posy>20</posy>
+        <width>740</width>
+        <height>30</height>
+        <font>font16caps</font>
+        <label>$ADDON[pvr.rtl.radiofm 30010]</label>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textcolor>white</textcolor>
+        <shadowcolor>black</shadowcolor>
+      </control>
+      <control type="button" id ="5">
+        <description>OK</description>
+        <posx>280</posx>
+        <posy>160</posy>
+        <width>250</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30011]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>6</onleft>
+        <onright>37</onright>
+        <onup>31</onup>
+        <ondown>31</ondown>
+      </control>
+      <control type="button" id ="37">
+        <description>Channel Name</description>
+        <posx>540</posx>
+        <posy>160</posy>
+        <width>245</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>-</label>
+        <font>font35_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">MenuItemNF.png</texturenofocus>
+        <texturefocus border="5">MenuItemFO.png</texturefocus>
+        <onleft>5</onleft>
+        <onright>6</onright>
+        <onup>37</onup>
+        <ondown>37</ondown>
+      </control>
+      <control type="button" id ="6">
+        <description>Cancel</description>
+        <posx>795</posx>
+        <posy>160</posy>
+        <width>250</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30012]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>37</onleft>
+        <onright>5</onright>
+        <onup>35</onup>
+        <ondown>35</ondown>
+      </control>
+      <control type="button" id ="30">
+        <description>Auto tune down</description>
+        <posx>280</posx>
+        <posy>80</posy>
+        <width>80</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30026]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>36</onleft>
+        <onright>31</onright>
+        <onup>5</onup>
+        <ondown>5</ondown>
+      </control>
+      <control type="button" id ="31">
+        <description>Decrease 1MHz</description>
+        <posx>365</posx>
+        <posy>80</posy>
+        <width>80</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30024]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>30</onleft>
+        <onright>32</onright>
+        <onup>5</onup>
+        <ondown>5</ondown>
+      </control>
+      <control type="button" id ="32">
+        <description>Decrease 0.1MHz</description>
+        <posx>450</posx>
+        <posy>80</posy>
+        <width>80</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30023]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>31</onleft>
+        <onright>34</onright>
+        <onup>5</onup>
+        <ondown>5</ondown>
+      </control>
+      <control type="label" id ="33">
+        <description>Current freq</description>
+        <posx>540</posx>
+        <posy>85</posy>
+        <width>245</width>
+        <height>50</height>
+        <font>font35_title</font>
+        <label>-</label>
+        <align>center</align>
+        <aligny>center</aligny>
+        <textcolor>white</textcolor>
+        <shadowcolor>black</shadowcolor>
+      </control>
+      <control type="label" id ="38">
+        <description>Current Level</description>
+        <posx>540</posx>
+        <posy>110</posy>
+        <width>245</width>
+        <height>50</height>
+        <font>font12_title</font>
+        <label>-</label>
+        <align>center</align>
+        <aligny>center</aligny>
+        <textcolor>white</textcolor>
+        <shadowcolor>black</shadowcolor>
+      </control>
+      <control type="button" id ="34">
+        <description>Increase 0.1MHz</description>
+        <posx>795</posx>
+        <posy>80</posy>
+        <width>80</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30022]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>32</onleft>
+        <onright>35</onright>
+        <onup>6</onup>
+        <ondown>6</ondown>
+      </control>
+      <control type="button" id ="35">
+        <description>Increase 1MHz</description>
+        <posx>880</posx>
+        <posy>80</posy>
+        <width>80</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30025]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>34</onleft>
+        <onright>36</onright>
+        <onup>6</onup>
+        <ondown>6</ondown>
+      </control>
+      <control type="button" id ="36">
+        <description>Auto Tune up</description>
+        <posx>965</posx>
+        <posy>80</posy>
+        <width>80</width>
+        <height>50</height>
+        <textoffsety>13</textoffsety>
+        <label>$ADDON[pvr.rtl.radiofm 30027]</label>
+        <font>font13_title</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturenofocus border="5">floor_button.png</texturenofocus>
+        <texturefocus border="5">floor_buttonFO.png</texturefocus>
+        <onleft>35</onleft>
+        <onright>30</onright>
+        <onup>6</onup>
+        <ondown>6</ondown>
+      </control>
+    </control>
+    <include>BehindDialogFadeOut</include>
+    <control type="group">
+      <posx>60</posx>
+      <posy>0</posy>
+      <animation effect="slide" end="-310,0" time="400" tween="quadratic" easing="out">WindowClose</animation>
+      <animation effect="slide" start="-310,0" time="400" tween="quadratic" easing="out">WindowOpen</animation>
+      <control type="image">
+        <posx>0</posx>
+        <posy>0</posy>
+        <width>250</width>
+        <height>35</height>
+        <texture border="0,0,32,0">header.png</texture>
+      </control>
+    </control>
+    <include>WindowTitleHomeButton</include>
+    <include>Clock</include>
+  </controls>
+</window>

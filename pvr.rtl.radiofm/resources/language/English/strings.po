@@ -1,0 +1,67 @@
+# XBMC Media Center language file
+# Addon Name: RTL SDR FM Radio Client
+# Addon id: pvr.rtl.radiofm
+# Addon Provider: Alwin Esch, Team XBMC
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC Main\n"
+"Report-Msgid-Bugs-To: http://trac.xbmc.org/\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc-main/language/en/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#settings labels
+
+msgctxt "#30010"
+msgid "Channel tuner"
+msgstr ""
+
+msgctxt "#30011"
+msgid "OK"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "#30020"
+msgid "+0.01"
+msgstr ""
+
+msgctxt "#30021"
+msgid "-0.01"
+msgstr ""
+
+msgctxt "#30022"
+msgid "+0.1"
+msgstr ""
+
+msgctxt "#30023"
+msgid "-0.1"
+msgstr ""
+
+msgctxt "#30024"
+msgid "-1.0"
+msgstr ""
+
+msgctxt "#30025"
+msgid "+1.0"
+msgstr ""
+
+msgctxt "#30026"
+msgid "<<"
+msgstr ""
+
+msgctxt "#30027"
+msgid ">>"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Signal: %i %%"
+msgstr ""

@@ -1,0 +1,54 @@
+<radio>
+    <devices>
+        <device>
+            <index>0</index>
+        </device>
+    </devices>
+    <uniqueid>
+        <index>8</index>
+    </uniqueid>
+    <channels>
+        <channel>
+            <uniqueid>7</uniqueid>
+            <freq>100600000.000000</freq>
+            <name>FM 100.6 MHz</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>1</uniqueid>
+            <freq>106700000.000000</freq>
+            <name>FM 106.7 MHz</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>2</uniqueid>
+            <freq>99200000.000000</freq>
+            <name>FM 99.2 MHz</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>3</uniqueid>
+            <freq>95100000.000000</freq>
+            <name>FM 95.1 MHz</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>4</uniqueid>
+            <freq>101300000.000000</freq>
+            <name>FM 101.3 MHz</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>5</uniqueid>
+            <freq>88790000.000000</freq>
+            <name>FM 88.8 MHz</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>6</uniqueid>
+            <freq>103300000.000000</freq>
+            <name>FM 103.3 MHz</name>
+            <icon></icon>
+        </channel>
+    </channels>
+</radio>
