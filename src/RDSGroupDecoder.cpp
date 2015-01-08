@@ -24,6 +24,7 @@
 #include "client.h"
 #include "RadioReceiver.h"
 #include "RDSGroupDecoder.h"
+#include "utils.h"
 
 //#define IMPROVE_CHECK 1
 

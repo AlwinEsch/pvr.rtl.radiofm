@@ -332,6 +332,6 @@ void cChannelSettings::UpdateFreq(uint32_t freq)
 
 void cChannelSettings::UpdateName(std::string name)
 {
-  m_window->SetControlLabel(CONTROL_BUTTON_CHANNEL_NAME, name.c_str());
   m_Name = name;
+  m_window->SetControlLabel(CONTROL_BUTTON_CHANNEL_NAME, m_Name.c_str());
 }

@@ -56,7 +56,6 @@ public:
       retVal = CodecDescriptor(CODEC->GetCodecByName("TEXT"), strCodecName);
     else
       retVal = CodecDescriptor(CODEC->GetCodecByName(strCodecName), strCodecName);
-fprintf(stderr, "_%s_ %x %s\n", __PRETTY_FUNCTION__, retVal.m_codec.codec_id, strCodecName);
     return retVal;
   }
 

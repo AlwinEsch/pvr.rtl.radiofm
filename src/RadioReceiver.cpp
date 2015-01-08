@@ -23,6 +23,7 @@
 #include "RadioReceiver.h"
 #include "ChannelSettings.h"
 #include "FmDecode.h"
+#include "utils.h"
 
 using namespace std;
 using namespace ADDON;
@@ -58,9 +59,11 @@ std::string cRadioReceiver::CreateChannelName(FMRadioChannel &channel) const
   CStdString name;
   if (!channel.strChannelName.empty() && channel.strChannelName != "-")
   {
-    name = channel.strChannelName;
-    while (name[0] == ' ' && !channel.strChannelName.empty())
+    name = StringUtils::Trim(channel.strChannelName);
+    while (!channel.strChannelName.empty() && name[0] == ' ')
       name.erase(name.begin());
+    while (!channel.strChannelName.empty() && name[name.length()-1] == ' ')
+      name.erase(name.end());
   }
   else if (channel.fChannelFreq >= 87500000.0f)
     name.Format("FM %.01f MHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000000.0f);
@@ -254,7 +257,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   }
 
   codecId = CodecDescriptor::GetCodecByName("rds");
-  if (codecId.Codec().codec_type == XBMC_CODEC_TYPE_DATA)
+  if (codecId.Codec().codec_type == XBMC_CODEC_TYPE_RDS)
   {
     XbmcPvrStream newStream;
     m_activeChannelStream.GetStreamData(2, &newStream);
@@ -554,7 +557,7 @@ void cRadioReceiver::SamplesMeanRMS(const float* samples, double& mean, double& 
 bool cRadioReceiver::SetChannelName(std::string name)
 {
   CLockObject lock(m_AudioSignalMutex);
-  m_channelName = name;
+  m_channelName = StringUtils::Trim(name);
 
   if (m_SettingsDialog)
   {

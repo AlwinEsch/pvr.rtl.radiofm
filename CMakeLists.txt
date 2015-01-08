@@ -24,7 +24,8 @@ set(BASIC_SOURCES src/client.cpp
                   src/FreqShift.cpp
                   src/RDSGroupDecoder.cpp
                   src/RDSProcess.cpp
-                  src/ChannelSettings.cpp)
+                  src/ChannelSettings.cpp
+                  src/utils.cpp)
 
 set(DEPLIBS ${xbmcplatform_LIBRARIES}
             ${RTL_SDR_LIBRARIES})
