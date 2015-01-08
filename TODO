@@ -1,0 +1,24 @@
+TODO list (also included things for KODI not todo with this addon):
+
+- Cleanup and improvement
+- Handle of RDS alternate Frequency list?
+- Improve RDS process to become data in better quality
+- Fix and check in KODI following (codec id for teletext and then compare???): 
+      m_streams[i] = st;
+      st->m_parser_split = true;
+    }
+    else if (props.stream[i].iCodecId == AV_CODEC_ID_DVB_TELETEXT)
+    {
+      if (stm)
+      {
+        if (stm->codec != (AVCodecID)props.stream[i].iCodecId)
+          DisposeStream(i);
+      }
+      if (!m_streams[i])
+        m_streams[i] = new CDemuxStreamTeletext();
+    }
+    else if (props.stream[i].iCodecType == XBMC_CODEC_TYPE_RDS &&
+             CSettings::Get().GetBool("pvrplayback.enableradiords"))
+    {
+  - Finish KODI RDS support
+  - Pull request for VDR plugin and related addon to add RDS
