@@ -949,7 +949,6 @@ void cRDSGroupDecoder::ClearUECPFrame()
   m_UECPDataFrame[2] = 0;                             //!<  "
   m_UECPDataFrame[3] = m_UECPDataFrameSeqCnt++;       //!< SQC
   m_UECPDataFrame[4] = 0;                             //!< MFL
-  m_UECPDataMsgLength = 0;
 
   m_UECPStuffingPtr = 0;
 }

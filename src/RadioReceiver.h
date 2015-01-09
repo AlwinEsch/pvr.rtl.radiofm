@@ -72,6 +72,7 @@ public:
    */
   bool LoadChannelData(void);
   bool SaveChannelData(void);
+  bool SetChannel(const PVR_CHANNEL &channel);
   unsigned int CreateNewUniqueId() { return m_UniqueIdNextNew++; }
   std::string CreateChannelName(FMRadioChannel &channel) const;
   std::vector<FMRadioChannel> *GetChannelData() { return &m_channels; }

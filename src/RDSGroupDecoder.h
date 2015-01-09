@@ -81,7 +81,6 @@ private:
   cRadioReceiver *m_RadioProc;
 
   uint8_t m_UECPDataFrameSeqCnt;
-  int     m_UECPDataMsgLength;
   int     m_UECPStuffingPtr;
   uint8_t m_UECPDataFrame[263];
 

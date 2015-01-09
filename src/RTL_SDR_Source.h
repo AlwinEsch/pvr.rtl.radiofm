@@ -35,8 +35,8 @@ class cRadioReceiver;
 class cRtlSdrSource : public PLATFORM::CThread
 {
 public:
-  static const int default_block_length = 16 * 32 * 512;
-  //static const int default_block_length = 65536;
+  //static const int default_block_length = 16 * 32 * 512;
+  static const int default_block_length = 65536;
 
   cRtlSdrSource(cRadioReceiver *proc);
   virtual ~cRtlSdrSource();

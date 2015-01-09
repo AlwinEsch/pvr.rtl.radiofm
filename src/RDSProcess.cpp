@@ -77,7 +77,7 @@ cRDSRxSignalProcessor::cRDSRxSignalProcessor(cRadioReceiver *proc, double Sample
   m_RdsMag          = (RealType*)calloc(MAX_RDS_ARRAY_SIZE    / m_DownConvertFactor, sizeof(RealType));
   m_RdsData         = (RealType*)calloc(MAX_RDS_ARRAY_SIZE    / m_DownConvertFactor, sizeof(RealType));
 
-  m_firLPFilter.InitLPFilter(0, 1.0, 50.0, 2400.0, 1.3*2400.0, m_ProcessRate);
+  m_firLPFilter.InitLPFilter(0, 1.0, 50.0, 2000.0, 1.3*2000.0, m_ProcessRate);
 
   //! initialize the PLL that is used to de-rotate the rds DSB signal
   RealType norm     = K_2PI/m_ProcessRate;  //!< to normalize Hz to radians

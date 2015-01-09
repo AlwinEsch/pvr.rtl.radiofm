@@ -198,7 +198,7 @@ private:
   inline void ProcessDeemphasisFilter(RealType* bufferA, RealType* bufferB, unsigned int length);
   inline void PhaseLockedLoop(ComplexType *signal, RealType *out, unsigned int dataSize);
 
-  const cRadioReceiver     *m_proc;
+   cRadioReceiver          *m_proc;
   const double              m_SampleRate_Interface;
   const double              m_SampleRate_Baseband;
   const int                 m_TuningTableSize;

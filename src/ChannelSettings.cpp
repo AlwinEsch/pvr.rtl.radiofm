@@ -325,8 +325,6 @@ void cChannelSettings::UpdateFreq(uint32_t freq)
   if (m_Source->IsActive())
     m_Source->GetSource()->SetFrequency(newFreq);
 
-  m_Source->SetStreamChange();
-
   UpdateName("-");
 }
 

@@ -29,6 +29,14 @@ using namespace std;
 using namespace ADDON;
 using namespace PLATFORM;
 
+#define DVD_TIME_BASE 1000000
+#define DVD_NOPTS_VALUE    (-1LL<<52) // should be possible to represent in both double and int64_t
+
+#define DVD_TIME_TO_SEC(x)  ((int)((double)(x) / DVD_TIME_BASE))
+#define DVD_TIME_TO_MSEC(x) ((int)((double)(x) * 1000 / DVD_TIME_BASE))
+#define DVD_SEC_TO_TIME(x)  ((double)(x) * DVD_TIME_BASE)
+#define DVD_MSEC_TO_TIME(x) ((double)(x) * DVD_TIME_BASE / 1000)
+
 cRadioReceiver::cRadioReceiver()
   : m_RtlSdrReceiver(this)
 {
@@ -117,10 +125,8 @@ PVR_ERROR cRadioReceiver::GetChannels(ADDON_HANDLE handle)
   return PVR_ERROR_NO_ERROR;
 }
 
-bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
+bool cRadioReceiver::SetChannel(const PVR_CHANNEL &channel)
 {
-  KODI->Log(LOG_INFO, "Starting usage of software decoder for AM, FM and DAB+ broadcast radio with RTL-SDR");
-
   m_activeIndex = -1;
   for (unsigned int iChannelPtr = 0; iChannelPtr < m_channels.size(); iChannelPtr++)
   {
@@ -146,7 +152,36 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
     return false;
   }
 
-  m_activeChannelFrequency      = m_channels[m_activeIndex].fChannelFreq;
+  m_activeChannelFrequency = m_channels[m_activeIndex].fChannelFreq;
+  return true;
+}
+
+bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
+{
+  KODI->Log(LOG_INFO, "Starting usage of software decoder for AM, FM and DAB+ broadcast radio with RTL-SDR");
+
+  m_activeIndex = -1;
+  for (unsigned int iChannelPtr = 0; iChannelPtr < m_channels.size(); iChannelPtr++)
+  {
+    if (m_channels[iChannelPtr].iUniqueId == channel.iUniqueId)
+    {
+      float freq = m_channels[iChannelPtr].fChannelFreq;
+      if (freq < 87500000.0f || freq > 108000000.0f)
+      {
+        KODI->Log(LOG_ERROR, "Used frequency %f0.2 MHz not allowed", freq / 1000.0f / 1000.0f);
+        return false;
+      }
+
+      m_activeChannelInfo       = channel;
+      m_activeIndex             = iChannelPtr;
+      m_activeChannelFrequency  = freq + 0.10 * m_IfRate; //!< Intentionally tune at a higher frequency to avoid DC offset.
+      break;
+    }
+  }
+
+  if (!SetChannel(channel))
+    return false;
+
   m_activeIndex                 = -1;
   m_DeviceIndex                 = -1;
   m_IfRate                      = 1.0e6;
@@ -227,6 +262,26 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   KODI->Log(LOG_INFO, "IF sample rate:    %.0f Hz", m_IfRate);
   KODI->Log(LOG_INFO, "RTL AGC mode:      %s", m_AgcMode ? "enabled" : "disabled");
 
+  // The baseband signal is empty above 100 kHz, so we can
+  // downsample to ~ 200 kS/s without loss of information.
+  // This will speed up later processing stages.
+  unsigned int downsample = max(1, int(m_IfRate / 215.0e3));
+  KODI->Log(LOG_INFO, "baseband downsampling factor %u", downsample);
+
+  // Prevent aliasing at very low output sample rates.
+  double bandwidth_pcm = min(DEFAULT_BANDWIDTH_PCM, 0.45 * m_PCMRate);
+  KODI->Log(LOG_INFO, "audio sample rate: %u Hz", m_PCMRate);
+  KODI->Log(LOG_INFO, "audio bandwidth:   %.3f kHz", bandwidth_pcm * 1.0e-3);
+
+  CLockObject lock(m_AudioSignalMutex);
+
+  // Prepare decoder.
+  m_FMDecoder = new cFmDecoder(this, m_IfRate,                            // sample_rate_if
+                               m_activeChannelFrequency - m_activeTunerFreq,                 // tuning_offset
+                               m_PCMRate,                           // sample_rate_pcm
+                               bandwidth_pcm,                     // bandwidth_pcm
+                               downsample);                       // downsample
+
   std::vector<XbmcPvrStream> newStreams;
 
   CodecDescriptor codecId = CodecDescriptor::GetCodecByName("pcm_f32le");
@@ -283,26 +338,6 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
     return false;
   }
 
-  // The baseband signal is empty above 100 kHz, so we can
-  // downsample to ~ 200 kS/s without loss of information.
-  // This will speed up later processing stages.
-  unsigned int downsample = max(1, int(m_IfRate / 215.0e3));
-  KODI->Log(LOG_INFO, "baseband downsampling factor %u", downsample);
-
-  // Prevent aliasing at very low output sample rates.
-  double bandwidth_pcm = min(DEFAULT_BANDWIDTH_PCM, 0.45 * m_PCMRate);
-  KODI->Log(LOG_INFO, "audio sample rate: %u Hz", m_PCMRate);
-  KODI->Log(LOG_INFO, "audio bandwidth:   %.3f kHz", bandwidth_pcm * 1.0e-3);
-
-  CLockObject lock(m_AudioSignalMutex);
-
-  // Prepare decoder.
-  m_FMDecoder = new cFmDecoder(this, m_IfRate,                            // sample_rate_if
-                               m_activeChannelFrequency - m_activeTunerFreq,                 // tuning_offset
-                               m_PCMRate,                           // sample_rate_pcm
-                               bandwidth_pcm,                     // bandwidth_pcm
-                               downsample);                       // downsample
-
   m_StreamChange = true;
   m_StreamActive = true;
 
@@ -333,14 +368,23 @@ void cRadioReceiver::CloseChannel()
 bool cRadioReceiver::SwitchChannel(const PVR_CHANNEL &channel)
 {
   KODI->Log(LOG_DEBUG, "changing to channel %d", channel.iChannelNumber);
-  CloseChannel();
-  return OpenChannel(channel);
+
+  if (!m_StreamActive || !SetChannel(channel))
+    return false;
+
+  m_RtlSdrReceiver.SetFrequency(m_activeChannelFrequency + 0.25 * m_IfRate);
+  m_activeTunerFreq = m_RtlSdrReceiver.GetFrequency();
+  m_channelName.clear();
+  m_AudioSourceBuffer.clear();
+
+  KODI->Log(LOG_INFO, "device tuned for:  %.6f MHz", m_activeTunerFreq * 1.0e-6);
+
+  m_StreamChange = true;
+  return true;
 }
 
 void cRadioReceiver::Abort(void)
 {
-//  CloseChannel();
-//  m_activeChannelStream.Clear();
 }
 
 bool cRadioReceiver::AddUECPDataFrame(uint8_t *UECPDataFrame)
@@ -486,6 +530,8 @@ DemuxPacket* cRadioReceiver::Read(void)
     double audio_mean, audio_rms;
     SamplesMeanRMS((float *)pPacket->pData, audio_mean, audio_rms, iSize);   //!< Measure audio level.
     m_AudioLevel = 0.95 * m_AudioLevel + 0.05 * audio_rms;
+
+    double duration = (double)(iSize) * DVD_TIME_BASE / 2 / OUTPUT_SAMPLERATE;
 
     pPacket->iStreamId  = m_activeChannelStream.GetStreamId(1);
     pPacket->iSize      = iSize*sizeof(float);

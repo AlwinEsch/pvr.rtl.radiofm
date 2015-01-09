@@ -27,6 +27,7 @@
 #include <math.h>
 
 #include "FmDecode.h"
+#include "RadioReceiver.h"
 #include "RTL_SDR_Source.h"
 
 using namespace std;
