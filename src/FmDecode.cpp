@@ -242,7 +242,7 @@ cFmDecoder::cFmDecoder(cRadioReceiver *proc,
   , m_FrequencyDev(DEFAULT_FREQ_DEV)
   , m_Downsample(downsample)
   , m_BandwidthInterface(DEFAULT_BANDWIDTH_IF)
-  , m_FMDeModGain(1.0 / (DEFAULT_FREQ_DEV / m_SampleRate_Baseband * K_2PI) * 2.0)
+  , m_FMDeModGain(1.0 / (DEFAULT_FREQ_DEV / m_SampleRate_Baseband * K_2PI))
   , m_FineTuner(m_TuningTableSize, m_TuningShift)       //!< Construct FineTuner
   , m_PilotPLL(                                         //!< Construct cPilotPhaseLock
          PILOT_FREQ / m_SampleRate_Baseband,      // freq
