@@ -167,6 +167,7 @@ void cRDSGroupDecoder::Reset()
   m_PS_Name[8] = 0;
   m_PS_SetFlag = 0;
   m_TA_TP = -1;
+  m_RTPlus_Ready = false;
 
   m_AF_MethodStarted = false;
   m_AF_MethodFinished = false;
@@ -599,20 +600,22 @@ void cRDSGroupDecoder::Decode_Type2___Radiotext(const uint16_t *element, bool Ve
 {
   unsigned int textPtr = element[1]&0x0f;
 
+  m_RTPlus_Ready = false;
+
   if (textPtr == 0 && m_RadioText_FirstPtr && m_RadioText_Count > 1)
   {
-    m_RadioText_Ready = true;
+    bool radioText_Ready = true;
     for (int i = 0; i < m_RadioText_Count; i++)
     {
       if (!(m_RadioText_SegmentRegister & (1<<i)))
       {
-        m_RadioText_Ready = false;
+        radioText_Ready = false;
         m_RadioText_SegmentRegister = 0;
         m_RadioText_Count = 0;
         break;
       }
     }
-    if (m_RadioText_Ready)
+    if (radioText_Ready)
     {
       ClearUECPFrame();
 
@@ -626,6 +629,7 @@ void cRDSGroupDecoder::Decode_Type2___Radiotext(const uint16_t *element, bool Ve
         AddStuffingValue(m_RadioText_Temp[i]);
 
       SendUECPFrame();
+      m_RTPlus_Ready = true;
     }
   }
 
@@ -905,7 +909,7 @@ void cRDSGroupDecoder::Decode_Type____ODA(const uint16_t *msgElement, int odaFun
   switch (odaFunction)
   {
     case ODA_AID_RADIOTEXT_PLUS:
-      if (m_RadioText_Ready)
+      if (m_RTPlus_Ready)
       {
         ClearUECPFrame();
         AddStuffingValue(UECP_ODA_DATA);
@@ -920,7 +924,7 @@ void cRDSGroupDecoder::Decode_Type____ODA(const uint16_t *msgElement, int odaFun
         AddStuffingValue( msgElement[BLOCK__D]    &0xFF);
         SendUECPFrame();
 
-        m_RadioText_Ready = false;
+        m_RTPlus_Ready = false;
       }
       break;
     case ODA_AID_TFC:

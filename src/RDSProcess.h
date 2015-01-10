@@ -44,7 +44,7 @@
 #define NUMBITS_CRC             10
 #define NUMBITS_MSG             16
 #define NUMBITS_BLOCK           (NUMBITS_CRC + NUMBITS_MSG)
-#define BLOCK_ERROR_LIMIT       1                               //!< number of bad blocks before trying to resync at the bit level
+#define BLOCK_ERROR_LIMIT       0                               //!< number of bad blocks before trying to resync at the bit level
 
 #define CRC_POLY                0x5B9                           //!< RDS crc polynomial  x^10+x^8+x^7+x^5+x^4+x^3+1
 

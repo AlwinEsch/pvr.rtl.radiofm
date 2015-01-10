@@ -111,7 +111,6 @@ private:
   bool    m_RadioText_FirstPtr;
   int     m_RadioText_LastPtr;
   int     m_RadioText_ABFlag;
-  bool    m_RadioText_Ready;
   uint32_t m_RadioText_SegmentRegister;
   int     m_RadioText_Count;
 
@@ -119,6 +118,7 @@ private:
   int     m_RTPlus_scb;
   int     m_RTPlus_cbflag;
   int     m_RTPlus_rfu;
+  bool    m_RTPlus_Ready;
 
   bool    m_AF_MethodStarted;
   bool    m_AF_MethodFinished;
