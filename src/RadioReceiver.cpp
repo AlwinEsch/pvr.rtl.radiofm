@@ -66,13 +66,7 @@ std::string cRadioReceiver::CreateChannelName(FMRadioChannel &channel) const
 {
   CStdString name;
   if (!channel.strChannelName.empty() && channel.strChannelName != "-")
-  {
     name = StringUtils::Trim(channel.strChannelName);
-    while (!channel.strChannelName.empty() && name[0] == ' ')
-      name.erase(name.begin());
-    while (!channel.strChannelName.empty() && name[name.length()-1] == ' ')
-      name.erase(name.end());
-  }
   else if (channel.fChannelFreq >= 87500000.0f)
     name.Format("FM %.01f MHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000000.0f);
   else if (channel.fChannelFreq >= 531000.0f)
