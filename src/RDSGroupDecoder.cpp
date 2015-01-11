@@ -553,8 +553,6 @@ void cRDSGroupDecoder::Decode_Type0___PS_DI_MS(const uint16_t *msgElement, bool 
       }
     }
   }
-#else
-  (void)versionCode;
 #endif // IMPROVE_CHECK_ALT_FREQ
 }
 
@@ -748,9 +746,6 @@ void cRDSGroupDecoder::Decode_Type5___TransparentDataChannels(const uint16_t *ms
 #ifdef IMPROVE_CHECK2
   unsigned int group_type = (unsigned int)((msgElement[BLOCK__B]>>12)&0xf);
   printf("Radio RDS/RaSS Processor %s - RDS group type: %u%c - 04%X 04%X 04%X 04%X\n", __FUNCTION__, group_type, versionCode ? 'A' : 'B', msgElement[0], msgElement[BLOCK__B], msgElement[BLOCK__C], msgElement[BLOCK__D]);
-#else
-  (void)msgElement;
-  (void)versionCode;
 #endif
 }
 
@@ -772,8 +767,6 @@ void cRDSGroupDecoder::Decode_Type7A__RadioPaging(const uint16_t *msgElement)
 #ifdef IMPROVE_CHECK
   unsigned int group_type = (unsigned int)((msgElement[BLOCK__B]>>12)&0xf);
   printf("Radio RDS/RaSS Processor %s - RDS group type: %uA - 04%X 04%X 04%X 04%X\n", __FUNCTION__, group_type, msgElement[0], msgElement[BLOCK__B], msgElement[BLOCK__C], msgElement[BLOCK__D]);
-#else
-  (void)msgElement;
 #endif
 }
 
@@ -853,8 +846,6 @@ void cRDSGroupDecoder::Decode_Type13A_EnhancedRadioPaging(const uint16_t *msgEle
 #ifdef IMPROVE_CHECK2
   unsigned int group_type = (unsigned int)((msgElement[BLOCK__B]>>12)&0xf);
   printf("Radio RDS/RaSS Processor %s - RDS group type: %uA - 04%X 04%X 04%X 04%X\n", __FUNCTION__, group_type, msgElement[0], msgElement[BLOCK__B], msgElement[BLOCK__C], msgElement[BLOCK__D]);
-#else
-  (void)msgElement;
 #endif
 }
 
@@ -867,9 +858,6 @@ void cRDSGroupDecoder::Decode_Type14__EnhancedOtherNetworksInfo(const uint16_t *
 #ifdef IMPROVE_CHECK2
   unsigned int group_type = (unsigned int)((msgElement[BLOCK__B]>>12)&0xf);
   printf("Radio RDS/RaSS Processor %s - RDS group type: %uA - 04%X 04%X 04%X 04%X\n", __FUNCTION__, group_type, msgElement[0], msgElement[BLOCK__B], msgElement[BLOCK__C], msgElement[BLOCK__D]);
-#else
-  (void)msgElement;
-  (void)versionCode;
 #endif
 }
 
@@ -882,8 +870,6 @@ void cRDSGroupDecoder::Decode_Type15A_RBDS(const uint16_t *msgElement)
 #ifdef IMPROVE_CHECK2
   unsigned int group_type = (unsigned int)((msgElement[BLOCK__B]>>12)&0xf);
   printf("Radio RDS/RaSS Processor %s - RDS group type: %uA - 04%X 04%X 04%X 04%X\n", __FUNCTION__, group_type, msgElement[0], msgElement[BLOCK__B], msgElement[BLOCK__C], msgElement[BLOCK__D]);
-#else
-  (void)msgElement;
 #endif
 }
 
@@ -896,8 +882,6 @@ void cRDSGroupDecoder::Decode_Type15B_FastSwitchingInfo(const uint16_t *msgEleme
 #ifdef IMPROVE_CHECK2
   unsigned int group_type = (unsigned int)((msgElement[BLOCK__B]>>12)&0xf);
   printf("Radio RDS/RaSS Processor %s - RDS group type: %uA - 04%X 04%X 04%X 04%X\n", __FUNCTION__, group_type, msgElement[0], msgElement[BLOCK__B], msgElement[BLOCK__C], msgElement[BLOCK__D]);
-#else
-  (void)msgElement;
 #endif
 }
 
