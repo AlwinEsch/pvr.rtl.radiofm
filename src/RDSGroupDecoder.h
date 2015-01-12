@@ -21,6 +21,7 @@
  */
 
 #include  <stdint.h>
+#include  <deque>
 #include  <vector>
 
 #define BLOCK__A 0  //indexes for the four blocks
@@ -83,6 +84,7 @@ private:
   uint8_t m_UECPDataFrameSeqCnt;
   int     m_UECPStuffingPtr;
   uint8_t m_UECPDataFrame[263];
+  std::vector<uint8_t> m_UECPDataFrame2;
 
   int     m_ODATypeMap[32];
 
@@ -134,7 +136,6 @@ private:
   std::vector<sAFMethod>    m_AF_AltFrequencies;
 
   void ClearUECPFrame();
-  uint16_t crc16_ccitt(const uint8_t *daten, int len, bool skipfirst = true);
   void AddStuffingValue(uint8_t value);
   void SendUECPFrame();
 

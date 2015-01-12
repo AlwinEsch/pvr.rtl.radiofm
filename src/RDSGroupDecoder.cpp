@@ -931,36 +931,23 @@ void cRDSGroupDecoder::Decode_Type____ODA(const uint16_t *msgElement, int odaFun
 
 void cRDSGroupDecoder::ClearUECPFrame()
 {
-  memset(m_UECPDataFrame+4, 0xFF, sizeof(m_UECPDataFrame)-4); //!< STP
-  m_UECPDataFrame[0] = 0xFE;                          //!< STA
-  m_UECPDataFrame[1] = 0;                             //!< ADD
-  m_UECPDataFrame[2] = 0;                             //!<  "
-  m_UECPDataFrame[3] = m_UECPDataFrameSeqCnt++;       //!< SQC
-  m_UECPDataFrame[4] = 0;                             //!< MFL
+  /*!
+   * @note start (0xFE) and end (0xFF) becomes set from AddUECPDataFrame
+   * function.
+   */
+  m_UECPDataFrame[0] = 0;                             //!< ADD
+  m_UECPDataFrame[1] = 0;                             //!<  "
+  m_UECPDataFrame[2] = m_UECPDataFrameSeqCnt;         //!< SQC
+  m_UECPDataFrame[3] = 0;                             //!< MFL
 
   m_UECPStuffingPtr = 0;
 }
 
-void cRDSGroupDecoder::SendUECPFrame()
-{
-  if (m_RadioProc->IsSettingActive())
-    return;
-
-  m_UECPDataFrame[4] = m_UECPStuffingPtr;
-  uint16_t crc = crc16_ccitt(m_UECPDataFrame, m_UECPStuffingPtr+4);
-  m_UECPDataFrame[5+m_UECPStuffingPtr+0] = (crc>>8)&0xff;
-  m_UECPDataFrame[5+m_UECPStuffingPtr+1] = crc & 0xff;
-  m_RadioProc->AddUECPDataFrame(m_UECPDataFrame);
-}
-
-uint16_t cRDSGroupDecoder::crc16_ccitt(const uint8_t *data, int len, bool skipfirst)
+static uint16_t CRC16Ccitt(const uint8_t *data, int len)
 {
   // CRC16-CCITT: x^16 + x^12 + x^5 + 1
   // with start 0xffff and result invers
   register uint16_t crc = 0xffff;
-
-  if (skipfirst)
-    data++;
 
   while (len--)
   {
@@ -974,6 +961,20 @@ uint16_t cRDSGroupDecoder::crc16_ccitt(const uint8_t *data, int len, bool skipfi
   return ~(crc);
 }
 
+void cRDSGroupDecoder::SendUECPFrame()
+{
+  if (m_RadioProc->IsSettingActive())
+    return;
+
+  m_UECPDataFrameSeqCnt++;
+
+  m_UECPDataFrame[3] = m_UECPStuffingPtr;
+  uint16_t crc = CRC16Ccitt(m_UECPDataFrame, m_UECPStuffingPtr+4);
+  m_UECPDataFrame[4+m_UECPStuffingPtr+0] = (crc>>8)&0xff;
+  m_UECPDataFrame[4+m_UECPStuffingPtr+1] = crc & 0xff;
+  m_RadioProc->AddUECPDataFrame(m_UECPDataFrame, m_UECPStuffingPtr+6);
+}
+
 void cRDSGroupDecoder::AddStuffingValue(uint8_t value)
 {
   if (m_UECPStuffingPtr > 255)
@@ -981,14 +982,5 @@ void cRDSGroupDecoder::AddStuffingValue(uint8_t value)
     KODI->Log(LOG_ERROR, "value reach end of allowed UECP frame size");
     return;
   }
-
-  if (value < 0xFD)
-  {
-    m_UECPDataFrame[5+m_UECPStuffingPtr++] = value;
-  }
-  else
-  {
-    m_UECPDataFrame[5+m_UECPStuffingPtr++] = 0xFD;
-    m_UECPDataFrame[5+m_UECPStuffingPtr++] = value^0xFD;
-  }
+  m_UECPDataFrame[4+m_UECPStuffingPtr++] = value;
 }

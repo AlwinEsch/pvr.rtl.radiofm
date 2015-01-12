@@ -201,10 +201,10 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
 
     KODI->Log(LOG_INFO, "Found %u device(s):", (unsigned int)devnames.size());
     for (unsigned int i = 0; i < devnames.size(); i++)
-      KODI->Log(LOG_INFO, " %2u: %s\n", i, devnames[i].c_str());
+      KODI->Log(LOG_INFO, " %2u: %s", i, devnames[i].c_str());
     m_DeviceIndex = 0;
   }
-  KODI->Log(LOG_INFO, "Using device %d: %s\n", m_DeviceIndex, devnames[m_DeviceIndex].c_str());
+  KODI->Log(LOG_INFO, "Using device %d: %s", m_DeviceIndex, devnames[m_DeviceIndex].c_str());
 
   //! Intentionally tune at a higher frequency to avoid DC offset.
   m_activeTunerFreq = m_activeChannelFrequency + 0.25 * m_IfRate;
@@ -253,7 +253,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
     KODI->Log(LOG_INFO, "LNA gain:          %.1f dB", 0.1 * m_RtlSdrReceiver.GetTunerGain());
 
   m_IfRate = m_RtlSdrReceiver.GetSampleRate();
-  KODI->Log(LOG_INFO, "IF sample rate:    %.0f Hz", m_IfRate);
+  KODI->Log(LOG_INFO, "IF sample rate:    %.0f", m_IfRate);
   KODI->Log(LOG_INFO, "RTL AGC mode:      %s", m_AgcMode ? "enabled" : "disabled");
 
   // The baseband signal is empty above 100 kHz, so we can
@@ -264,7 +264,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
 
   // Prevent aliasing at very low output sample rates.
   double bandwidth_pcm = min(DEFAULT_BANDWIDTH_PCM, 0.45 * m_PCMRate);
-  KODI->Log(LOG_INFO, "audio sample rate: %u Hz", m_PCMRate);
+  KODI->Log(LOG_INFO, "audio sample rate: %.0f", m_PCMRate);
   KODI->Log(LOG_INFO, "audio bandwidth:   %.3f kHz", bandwidth_pcm * 1.0e-3);
 
   CLockObject lock(m_AudioSignalMutex);
@@ -334,6 +334,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
 
   m_StreamChange = true;
   m_StreamActive = true;
+  m_PTSNext      = DVD_TIME_BASE;
 
   return true;
 }
@@ -351,12 +352,14 @@ void cRadioReceiver::CloseChannel()
 
   m_RtlSdrReceiver.Close();
   if (m_FMDecoder)
+  {
     delete m_FMDecoder;
-  m_FMDecoder = NULL;
+    m_FMDecoder = NULL;
 
-  m_channelName.clear();
-  m_AudioSourceBuffer.clear();
-  m_activeChannelStream.Clear();
+    m_channelName.clear();
+    m_AudioSourceBuffer.clear();
+    m_activeChannelStream.Clear();
+  }
 }
 
 bool cRadioReceiver::SwitchChannel(const PVR_CHANNEL &channel)
@@ -368,31 +371,45 @@ bool cRadioReceiver::SwitchChannel(const PVR_CHANNEL &channel)
 
   m_RtlSdrReceiver.SetFrequency(m_activeChannelFrequency + 0.25 * m_IfRate);
   m_activeTunerFreq = m_RtlSdrReceiver.GetFrequency();
+  m_PTSNext         = DVD_TIME_BASE;
+  m_StreamChange    = true;
+
   m_channelName.clear();
   m_AudioSourceBuffer.clear();
 
   KODI->Log(LOG_INFO, "device tuned for:  %.6f MHz", m_activeTunerFreq * 1.0e-6);
 
-  m_StreamChange = true;
   return true;
 }
 
 void cRadioReceiver::Abort(void)
 {
+  m_activeChannelStream.Clear();
 }
 
-bool cRadioReceiver::AddUECPDataFrame(uint8_t *UECPDataFrame)
+bool cRadioReceiver::AddUECPDataFrame(uint8_t *UECPDataFrame, unsigned int length)
 {
   if (m_UECPOutputBuffer.size() > 16384)
     return false;
 
   CLockObject lock(m_UECPMutex);
 
+  uint8_t value;
   int ptr = 0;
-  while (UECPDataFrame[ptr] != 0xFF)
+
+  m_UECPOutputBuffer.push_back(0xFE);
+  for (unsigned int i = 0; i < length; i++)
   {
-    m_UECPOutputBuffer.push_back(UECPDataFrame[ptr]);
-    ptr++;
+    value = UECPDataFrame[i];
+    if (value < 0xFD)
+    {
+      m_UECPOutputBuffer.push_back(value);
+    }
+    else
+    {
+      m_UECPOutputBuffer.push_back(0xFD);
+      m_UECPOutputBuffer.push_back((value&3)-1);
+    }
   }
   m_UECPOutputBuffer.push_back(0xFF);
 
@@ -487,6 +504,7 @@ DemuxPacket* cRadioReceiver::Read(void)
 
       pPacket->iStreamId  = iStreamId;
       pPacket->iSize      = iSize;
+      pPacket->pts        = m_PTSNext;
 
       m_UECPOutputBuffer.clear();
       return pPacket;
@@ -529,6 +547,10 @@ DemuxPacket* cRadioReceiver::Read(void)
 
     pPacket->iStreamId  = m_activeChannelStream.GetStreamId(1);
     pPacket->iSize      = iSize*sizeof(float);
+    pPacket->duration   = duration;
+    pPacket->pts        = m_PTSNext;
+
+    m_PTSNext = m_PTSNext + duration;
   }
 
   return pPacket;

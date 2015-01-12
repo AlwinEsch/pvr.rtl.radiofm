@@ -115,7 +115,7 @@ private:
  * Input stream related functions and data
  */
 public:
-  bool AddUECPDataFrame(uint8_t *UECPDataFrame);
+  bool AddUECPDataFrame(uint8_t *UECPDataFrame, unsigned int length);
   void WriteDataBuffer(std::vector<ComplexType> &iqsamples);
   void EndDataBuffer();
 
@@ -130,6 +130,7 @@ private:
   std::vector<uint8_t>                m_UECPOutputBuffer;
 
   PLATFORM::CMutex                    m_AudioSignalMutex;
+  double                              m_PTSNext;
 
   size_t                              m_AudioSourceSize;
   std::deque<std::vector<ComplexType> >  m_AudioSourceBuffer;
