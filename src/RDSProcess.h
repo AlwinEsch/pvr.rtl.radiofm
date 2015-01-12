@@ -75,6 +75,7 @@ class cRDSRxSignalProcessor
 public:
   cRDSRxSignalProcessor(cRadioReceiver *proc, double SampleRate);
   virtual ~cRDSRxSignalProcessor();
+  void Reset();
 
   void Process(const RealType *inputStream, unsigned int items);
 
@@ -92,6 +93,7 @@ private:
   RealType           *m_RdsMag;
   RealType           *m_RdsData;
   RealType           *m_RdsMatchCoef;
+  unsigned int        m_RdsMatchCoefLength;
 
   RealType            m_RdsNcoPhase;    //variables for RDS PLL
   RealType            m_RdsNcoFreq;

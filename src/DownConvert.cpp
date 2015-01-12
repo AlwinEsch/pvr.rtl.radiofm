@@ -99,6 +99,14 @@ cDownsampleFilter::~cDownsampleFilter()
   free(m_stateReal);
 }
 
+void cDownsampleFilter::Reset()
+{
+  m_pos_int = 0;
+  m_pos_frac = 0;
+  memset(m_stateReal, 0, m_stateOrderSize*sizeof(RealType));
+  memset(m_stateComplex, 0, m_stateOrderSize*sizeof(ComplexType));
+}
+
 unsigned int cDownsampleFilter::Process(const ComplexType *samples_in, ComplexType *samples_out, unsigned int length)
 {
   unsigned int order = m_stateOrderSize;

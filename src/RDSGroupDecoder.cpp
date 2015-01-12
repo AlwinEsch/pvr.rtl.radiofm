@@ -149,7 +149,6 @@ using namespace ADDON;
 cRDSGroupDecoder::cRDSGroupDecoder(cRadioReceiver *proc)
   : m_RadioProc(proc)
 {
-  Reset();
 }
 
 void cRDSGroupDecoder::Reset()

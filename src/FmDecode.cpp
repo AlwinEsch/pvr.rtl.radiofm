@@ -268,14 +268,6 @@ cFmDecoder::cFmDecoder(cRadioReceiver *proc,
   m_BufferStereo      = new RealType[cRtlSdrSource::default_block_length];
   m_BufferRawStereo   = new RealType[cRtlSdrSource::default_block_length];
 
-  m_StereoDetected    = false;
-  m_InterfaceLevel    = 0;
-  m_BasebandMean      = 0;
-  m_BasebandLevel     = 0;
-  m_AudioLevel        = 0;
-
-  m_DemodDCOffset     = 0;
-
   m_DCBlock.Init(ftHP, 30.0, 2.0, sample_rate_pcm);
   m_NotchFilter.Init(ftBR, PILOTPLL_FREQ, 5, sample_rate_pcm);
   m_LPFilter.InitLPFilter(0, 1.0, 60.0, 15000.0, 1.4*15000.0, sample_rate_pcm);
@@ -299,8 +291,7 @@ cFmDecoder::cFmDecoder(cRadioReceiver *proc,
 	m_NcoHLimit	        = (+maxFreqDev) * fac;
 	m_PLLAlpha	        = 0.125 * bandwidth * fac;	        //!< pll bandwidth
 	m_PLLBeta           = (m_PLLAlpha * m_PLLAlpha) / 2.0;  //!< second order term
-	m_NcoPhaseIncr      = 0.0;		                          //!< this will change during runs
-	m_NcoPhase          = 0.0;
+	Reset();
 }
 
 cFmDecoder::~cFmDecoder()
@@ -311,6 +302,20 @@ cFmDecoder::~cFmDecoder()
   delete[] m_BufferMono;
   delete[] m_BufferStereo;
   delete[] m_BufferRawStereo;
+}
+
+void cFmDecoder::Reset()
+{
+  m_StereoDetected    = false;
+  m_InterfaceLevel    = 0;
+  m_BasebandMean      = 0;
+  m_BasebandLevel     = 0;
+  m_AudioLevel        = 0;
+  m_DemodDCOffset     = 0;
+	m_NcoPhaseIncr      = 0.0;		                          //!< this will change during runs
+	m_NcoPhase          = 0.0;
+
+  m_RDSProcess.Reset();
 }
 
 void cFmDecoder::InitDeemphasis(RealType Time, RealType SampleRate)  //!< create De-emphasis LP filter

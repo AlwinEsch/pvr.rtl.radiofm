@@ -336,6 +336,8 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   m_StreamActive = true;
   m_PTSNext      = DVD_TIME_BASE;
 
+  m_FMDecoder->Reset();
+
   return true;
 }
 
@@ -376,6 +378,7 @@ bool cRadioReceiver::SwitchChannel(const PVR_CHANNEL &channel)
 
   m_channelName.clear();
   m_AudioSourceBuffer.clear();
+  m_FMDecoder->Reset();
 
   KODI->Log(LOG_INFO, "device tuned for:  %.6f MHz", m_activeTunerFreq * 1.0e-6);
 

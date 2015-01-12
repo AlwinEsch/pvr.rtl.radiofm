@@ -30,6 +30,9 @@ class cFreqShift
 public:
   cFreqShift(RealType NcoFreq, RealType InRate);
   virtual ~cFreqShift() {};
+
+  void Reset();
+
   void Process(ComplexType* pInData, unsigned int InLength);
 
 private:

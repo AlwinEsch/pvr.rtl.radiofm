@@ -77,8 +77,6 @@ cRDSRxSignalProcessor::cRDSRxSignalProcessor(cRadioReceiver *proc, double Sample
   m_RdsMag          = (RealType*)calloc(MAX_RDS_ARRAY_SIZE    / m_DownConvertFactor, sizeof(RealType));
   m_RdsData         = (RealType*)calloc(MAX_RDS_ARRAY_SIZE    / m_DownConvertFactor, sizeof(RealType));
 
-  m_firLPFilter.InitLPFilter(0, 1.0, 50.0, 2000.0, 1.3*2000.0, m_ProcessRate);
-
   //! initialize the PLL that is used to de-rotate the rds DSB signal
   RealType norm     = K_2PI/m_ProcessRate;  //!< to normalize Hz to radians
   m_RdsNcoLLimit    = (m_RdsNcoFreq-RDSPLL_RANGE) * norm;    //clamp RDS PLL NCO
@@ -89,33 +87,20 @@ cRDSRxSignalProcessor::cRDSRxSignalProcessor(cRadioReceiver *proc, double Sample
    *  This is basically the time domain shape of a single bi-phase bit
    *  as defined for RDS and is close to a single cycle sine wave in shape
    */
-  int matchCoefLength = m_ProcessRate / RDS_BITRATE;
-  m_RdsMatchCoef    = (RealType*)calloc(matchCoefLength*2+1, sizeof(RealType));
-  for(int i= 0; i <= matchCoefLength; i++)
+  m_RdsMatchCoefLength = m_ProcessRate / RDS_BITRATE;
+  m_RdsMatchCoef       = (RealType*)calloc(m_RdsMatchCoefLength*2+1, sizeof(RealType));
+  for(int i= 0; i <= m_RdsMatchCoefLength; i++)
   {
     RealType t = (RealType)i/(m_ProcessRate);
     RealType x = t*RDS_BITRATE;
     RealType x64 = 64.0*x;
-    m_RdsMatchCoef[i+matchCoefLength] =  .75*MCOS(2.0*K_2PI*x)*( (1.0/(1.0/x-x64)) - (1.0/(9.0/x-x64)) );
-    m_RdsMatchCoef[matchCoefLength-i] = -.75*MCOS(2.0*K_2PI*x)*( (1.0/(1.0/x-x64)) - (1.0/(9.0/x-x64)) );
+    m_RdsMatchCoef[i+m_RdsMatchCoefLength] =  .75*MCOS(2.0*K_2PI*x)*( (1.0/(1.0/x-x64)) - (1.0/(9.0/x-x64)) );
+    m_RdsMatchCoef[m_RdsMatchCoefLength-i] = -.75*MCOS(2.0*K_2PI*x)*( (1.0/(1.0/x-x64)) - (1.0/(9.0/x-x64)) );
   }
-  matchCoefLength *= 2;
-
-  //! load the matched filter coef into FIR filter
-  m_RdsMatchedFilter.InitConstFir(matchCoefLength, m_RdsMatchCoef, m_ProcessRate);
-
-  //! create Hi-Q resonator at the bit rate to recover bit sync position Q==500
-  m_RdsBitSyncFilter.Init(ftBP, RDS_BITRATE, 500, m_ProcessRate);
+  m_RdsMatchCoefLength *= 2;
 
   //! initialize a bunch of variables pertaining to the rds decoder
-  m_RdsLastBit          = 0;
-  m_CurrentBitPosition  = 0;
-  m_CurrentBlock        = BLOCK__A;
-  m_DecodeState         = STATE_BITSYNC;
-  m_BGroupOffset        = 0;
-  m_ClockInput          = false;
-  m_DataInputPrev       = 0;
-  m_ClockLastValue      = 0.0;
+  Reset();
 }
 
 cRDSRxSignalProcessor::~cRDSRxSignalProcessor()
@@ -125,6 +110,31 @@ cRDSRxSignalProcessor::~cRDSRxSignalProcessor()
   free(m_RdsMag);
   free(m_RdsData);
   free(m_RdsMatchCoef);
+}
+
+void cRDSRxSignalProcessor::Reset()
+{
+  m_Decoder.Reset();
+  m_DownConvert.Reset();
+  m_InputFreqShift.Reset();
+
+  m_firLPFilter.InitLPFilter(0, 1.0, 50.0, 2000.0, 1.3*2000.0, m_ProcessRate);
+
+  //! load the matched filter coef into FIR filter
+  m_RdsMatchedFilter.InitConstFir(m_RdsMatchCoefLength, m_RdsMatchCoef, m_ProcessRate);
+
+  //! create Hi-Q resonator at the bit rate to recover bit sync position Q==500
+  m_RdsBitSyncFilter.Init(ftBP, RDS_BITRATE, 500, m_ProcessRate);
+
+  m_RdsLastBit          = 0;
+  m_CurrentBitPosition  = 0;
+  m_CurrentBlock        = BLOCK__A;
+  m_DecodeState         = STATE_BITSYNC;
+  m_BGroupOffset        = 0;
+  m_ClockInput          = false;
+  m_DataInputPrev       = 0;
+  m_ClockLastValue      = 0.0;
+  m_RdsLastData         = 0.0;
 }
 
 void cRDSRxSignalProcessor::Process(const RealType *inputStream, unsigned int inLength)

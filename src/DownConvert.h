@@ -51,6 +51,8 @@ public:
                     double downsample=1, bool integer_factor=true);
   virtual ~cDownsampleFilter();
 
+  void Reset();
+
   /*! Process samples. */
   unsigned int Process(const RealType *samples_in, RealType *samples_out, unsigned int length);
   unsigned int Process(const ComplexType *samples_in, ComplexType *samples_out, unsigned int length);

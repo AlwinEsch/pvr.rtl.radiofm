@@ -34,6 +34,11 @@ cFreqShift::cFreqShift(RealType NcoFreq, RealType InRate)
 	m_NcoInc  = K_2PI * m_NcoFreq / m_InRate;
 }
 
+void cFreqShift::Reset()
+{
+  m_NcoTime = 0.0;
+}
+
 void cFreqShift::Process(ComplexType* pInData, unsigned int InLength)
 {
   ComplexType dtmp;

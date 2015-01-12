@@ -133,6 +133,8 @@ public:
 
   virtual ~cFmDecoder();
 
+  void Reset();
+
   /*!
    * Process IQ samples and return audio samples.
    *
