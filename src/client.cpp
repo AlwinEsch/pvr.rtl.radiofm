@@ -384,6 +384,7 @@ bool SeekTime(int time, bool backwards, double *startpts) { return false; }
 time_t GetPlayingTime() { return 0; }
 time_t GetBufferTimeStart() { return 0; }
 time_t GetBufferTimeEnd() { return 0; }
+const char* GetBackendHostname() { return ""; }
 void SetSpeed(int) {};
 void PauseStream(bool bPaused) {}
 void DemuxReset(void) {}
