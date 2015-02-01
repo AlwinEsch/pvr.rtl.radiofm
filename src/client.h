@@ -26,11 +26,11 @@
 #include "kodi/libXBMC_pvr.h"
 #include "kodi/libXBMC_gui.h"
 #include "kodi/DVDDemuxPacket.h"
-#include "xbmc/util/XMLUtils.h"
-#include "xbmc/util/StdString.h"
-#include "xbmc/util/util.h"
-#include "xbmc/util/timeutils.h"
-#include "xbmc/threads/threads.h"
+#include "kodi/util/XMLUtils.h"
+#include "kodi/util/StdString.h"
+#include "kodi/util/util.h"
+#include "kodi/util/timeutils.h"
+#include "kodi/threads/threads.h"
 
 extern bool                          m_bCreated;
 extern std::string                   g_strUserPath;

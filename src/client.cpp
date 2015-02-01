@@ -22,7 +22,7 @@
 
 #include "client.h"
 #include "kodi/xbmc_pvr_dll.h"
-#include "xbmc/util/util.h"
+#include "kodi/util/util.h"
 
 #include "RadioReceiver.h"
 #include "ChannelSettings.h"
@@ -205,6 +205,7 @@ PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities)
   pCapabilities->bHandlesInputStream         = true;
   pCapabilities->bHandlesDemuxing            = true;
   pCapabilities->bSupportsChannelScan        = false;
+  pCapabilities->bSupportsChannelSettings    = true;
 
   return PVR_ERROR_NO_ERROR;
 }

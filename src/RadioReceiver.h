@@ -27,7 +27,7 @@
 #include <deque>
 #include <string>
 
-#include "xbmc_codec_descriptor.hpp"
+#include "kodi_codec_descriptor.hpp"
 #include "Definations.h"
 #include "DownConvert.h"
 #include "RTL_SDR_Source.h"
