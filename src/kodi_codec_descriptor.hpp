@@ -19,10 +19,11 @@
  */
 
 #ifndef KODI_CODEC_DESCRIPTOR_HPP
-#define	KODI_CODEC_DESCRIPTOR_HPP
+#define KODI_CODEC_DESCRIPTOR_HPP
 
 #include "kodi/libXBMC_codec.h"
 #include <stdio.h>
+
 /**
  * Adapter which converts codec names used by tvheadend and VDR into their
  * FFmpeg equivalents.
@@ -64,4 +65,4 @@ private:
   std::string  m_strName;
 };
 
-#endif	/* KODI_CODEC_DESCRIPTOR_HPP */
+#endif  /* KODI_CODEC_DESCRIPTOR_HPP */

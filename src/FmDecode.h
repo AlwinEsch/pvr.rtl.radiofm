@@ -238,11 +238,11 @@ private:
   RealType                  m_DeemphasisAveIm;
   RealType                  m_DeemphasisAlpha;
 
-	RealType	                m_NcoPhase;
-	RealType	                m_NcoPhaseIncr;
-	RealType	                m_NcoHLimit;
-	RealType	                m_NcoLLimit;
-	RealType	                m_PLLAlpha;
-	RealType	                m_PLLBeta;
-  RealType	                m_DemodDCOffset;
+  RealType                  m_NcoPhase;
+  RealType                  m_NcoPhaseIncr;
+  RealType                  m_NcoHLimit;
+  RealType                  m_NcoLLimit;
+  RealType                  m_PLLAlpha;
+  RealType                  m_PLLBeta;
+  RealType                  m_DemodDCOffset;
 };

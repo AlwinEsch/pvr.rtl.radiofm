@@ -245,17 +245,17 @@ void cRDSRxSignalProcessor::ProcessRdsPll(ComplexType* pInData, RealType* pOutDa
   for (unsigned int i = 0; i < InLength; i++)
   {
 #if TARGET_WINDOWS
-    RealType*	pdCosAns  = &Cos;
-    RealType*	pdSinAns  = &Sin;
-		_asm
-		{
-			fld QWORD PTR [m_RdsNcoPhase]
-			fsincos
-			mov ebx,[pdCosAns]		;	get the pointer into ebx
-			fstp QWORD PTR [ebx]	;	store the result through the pointer
-			mov ebx,[pdSinAns]
-			fstp QWORD PTR [ebx]
-		}
+    RealType*  pdCosAns  = &Cos;
+    RealType*  pdSinAns  = &Sin;
+    _asm
+    {
+      fld QWORD PTR [m_RdsNcoPhase]
+      fsincos
+      mov ebx,[pdCosAns]    ;  get the pointer into ebx
+      fstp QWORD PTR [ebx]  ;  store the result through the pointer
+      mov ebx,[pdSinAns]
+      fstp QWORD PTR [ebx]
+    }
 #elif (defined(__i386__) || defined(__x86_64__))
     asm volatile ("fsincos" : "=%&t" (Cos), "=%&u" (Sin) : "0" (m_RdsNcoPhase));  //126nS
 #else

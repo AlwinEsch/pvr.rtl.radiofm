@@ -143,17 +143,17 @@ bool cPilotPhaseLock::Process(const RealType *samples_in, RealType *samples_out,
   {
     //! Generate locked pilot tone.
 #if TARGET_WINDOWS
-    RealType*	pdCosAns  = &pcos;
-    RealType*	pdSinAns  = &psin;
-		_asm
-		{
-			fld QWORD PTR [m_phase]
-			fsincos
-			mov ebx,[pdCosAns]		;	get the pointer into ebx
-			fstp QWORD PTR [ebx]	;	store the result through the pointer
-			mov ebx,[pdSinAns]
-			fstp QWORD PTR [ebx]
-		}
+    RealType*  pdCosAns  = &pcos;
+    RealType*  pdSinAns  = &psin;
+    _asm
+    {
+      fld QWORD PTR [m_phase]
+      fsincos
+      mov ebx,[pdCosAns]    ;  get the pointer into ebx
+      fstp QWORD PTR [ebx]  ;  store the result through the pointer
+      mov ebx,[pdSinAns]
+      fstp QWORD PTR [ebx]
+    }
 #elif (defined(__i386__) || defined(__x86_64__))
     asm volatile ("fsincos" : "=%&t" (pcos), "=%&u" (psin) : "0" (m_phase));
 #else
@@ -223,7 +223,7 @@ bool cPilotPhaseLock::Process(const RealType *samples_in, RealType *samples_out,
 /* ****************  class cFmDecoder  **************** */
 
 #define PILOTPLL_FREQ 19000.0  //Centerfreq
-#define	RDS_DECIMATOR	8
+#define  RDS_DECIMATOR  8
 
 cFmDecoder::cFmDecoder(cRadioReceiver *proc,
                      double sample_rate_if,
@@ -287,11 +287,11 @@ cFmDecoder::cFmDecoder(cRadioReceiver *proc,
   RealType bandwidth  = 0.85 * m_SampleRate_Baseband;
   RealType maxFreqDev = 0.95 * (0.5 * m_SampleRate_Baseband);
 
-	m_NcoLLimit	        = (-maxFreqDev) * fac;		          //!< boundary for changes
-	m_NcoHLimit	        = (+maxFreqDev) * fac;
-	m_PLLAlpha	        = 0.125 * bandwidth * fac;	        //!< pll bandwidth
-	m_PLLBeta           = (m_PLLAlpha * m_PLLAlpha) / 2.0;  //!< second order term
-	Reset();
+  m_NcoLLimit          = (-maxFreqDev) * fac;              //!< boundary for changes
+  m_NcoHLimit          = (+maxFreqDev) * fac;
+  m_PLLAlpha          = 0.125 * bandwidth * fac;          //!< pll bandwidth
+  m_PLLBeta           = (m_PLLAlpha * m_PLLAlpha) / 2.0;  //!< second order term
+  Reset();
 }
 
 cFmDecoder::~cFmDecoder()
@@ -312,8 +312,8 @@ void cFmDecoder::Reset()
   m_BasebandLevel     = 0;
   m_AudioLevel        = 0;
   m_DemodDCOffset     = 0;
-	m_NcoPhaseIncr      = 0.0;		                          //!< this will change during runs
-	m_NcoPhase          = 0.0;
+  m_NcoPhaseIncr      = 0.0;                              //!< this will change during runs
+  m_NcoPhase          = 0.0;
 
   m_RDSProcess.Reset();
 }
@@ -349,17 +349,17 @@ void cFmDecoder::PhaseLockedLoop(ComplexType *signal, RealType *out, unsigned in
   for (unsigned int i = 0; i < dataSize; i++)
   {
 #if TARGET_WINDOWS
-    RealType*	pdCosAns  = &Sin;
-    RealType*	pdSinAns  = &Cos;
-		_asm
-		{
-			fld QWORD PTR [m_NcoPhase]
-			fsincos
-			mov ebx,[pdCosAns]		;	get the pointer into ebx
-			fstp QWORD PTR [ebx]	;	store the result through the pointer
-			mov ebx,[pdSinAns]
-			fstp QWORD PTR [ebx]
-		}
+    RealType*  pdCosAns  = &Sin;
+    RealType*  pdSinAns  = &Cos;
+    _asm
+    {
+      fld QWORD PTR [m_NcoPhase]
+      fsincos
+      mov ebx,[pdCosAns]    ;  get the pointer into ebx
+      fstp QWORD PTR [ebx]  ;  store the result through the pointer
+      mov ebx,[pdSinAns]
+      fstp QWORD PTR [ebx]
+    }
 #elif (defined(__i386__) || defined(__x86_64__))
     asm volatile ("fsincos" : "=%&t" (Cos), "=%&u" (Sin) : "0" (m_NcoPhase));  //126nS
 #else
@@ -367,7 +367,7 @@ void cFmDecoder::PhaseLockedLoop(ComplexType *signal, RealType *out, unsigned in
     Cos = MCOS(m_NcoPhase);
 #endif
 
-    pll_Delay	= ComplexType(Cos, Sin) * signal[i];
+    pll_Delay = ComplexType(Cos, Sin) * signal[i];
     phzError  = -atan2(imag(pll_Delay), real(pll_Delay));
 
     m_NcoPhaseIncr += m_PLLBeta * phzError;
