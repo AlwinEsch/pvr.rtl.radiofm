@@ -107,7 +107,7 @@ PVR_ERROR cChannelSettings::Open(const PVR_CHANNEL &channel, cRadioReceiver *sou
 
   GUI->Window_destroy(m_window);
 
-  return m_WasSaved ? PVR_ERROR_NO_ERROR : PVR_ERROR_REJECTED;
+  return PVR_ERROR_NO_ERROR;
 }
 
 void *cChannelSettings::Process()
