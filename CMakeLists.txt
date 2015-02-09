@@ -6,13 +6,16 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
 enable_language(CXX)
 
-find_package(xbmc REQUIRED)
-find_package(xbmcplatform REQUIRED)
+find_package(kodi REQUIRED)
+find_package(kodiplatform REQUIRED)
 find_package(RtlSdr REQUIRED)
 
-add_definitions(-DUSE_DEMUX=1 -fPIC -g -O2 -std=gnu++11)
-include_directories(${xbmcplatform_INCLUDE_DIRS}
-                    ${XBMC_INCLUDE_DIR})
+add_definitions(-DUSE_DEMUX -fPIC -g -O2 -std=gnu++11)
+include_directories(${kodiplatform_INCLUDE_DIRS}
+                    ${KODI_INCLUDE_DIR})
+
+set(DEPLIBS ${kodiplatform_LIBRARIES}
+            ${RTL_SDR_LIBRARIES})
 
 set(BASIC_SOURCES src/client.cpp
                   src/RadioReceiver.cpp
@@ -26,9 +29,6 @@ set(BASIC_SOURCES src/client.cpp
                   src/RDSProcess.cpp
                   src/ChannelSettings.cpp
                   src/utils.cpp)
-
-set(DEPLIBS ${xbmcplatform_LIBRARIES}
-            ${RTL_SDR_LIBRARIES})
 
 build_addon(pvr.rtl.radiofm BASIC DEPLIBS)
 
