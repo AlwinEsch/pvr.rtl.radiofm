@@ -305,7 +305,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
     return false;
   }
 
-/*  codecId = CodecDescriptor::GetCodecByName("rds");
+  codecId = CodecDescriptor::GetCodecByName("rds");
   if (codecId.Codec().codec_type == XBMC_CODEC_TYPE_RDS)
   {
     XbmcPvrStream newStream;
@@ -331,7 +331,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
     m_activeChannelStream.Clear();
     return false;
   }
-*/
+
   m_StreamChange = true;
   m_StreamActive = true;
   m_PTSNext      = DVD_TIME_BASE;

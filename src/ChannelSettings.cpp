@@ -211,6 +211,10 @@ bool cChannelSettings::OnClick(int controlId)
       m_AutoTuneIgnore = true;
       break;
     case CONTROL_BUTTON_CHANNEL_NAME:
+      {
+        std::string retString;
+        GUI->Dialog_Keyboard_ShowAndGetInput(retString, "Test", true, false, 0);
+      }
       break;
     case BUTTON_OK:
       if (m_addAdjust)

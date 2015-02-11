@@ -229,12 +229,12 @@ const char *GetConnectionString(void)
   return strConnectionString.c_str();
 }
 
-PVR_ERROR DialogChannelScan(void)
+PVR_ERROR OpenDialogChannelScan(void)
 {
   return PVR_ERROR_NOT_IMPLEMENTED;
 }
 
-PVR_ERROR DialogChannelSettings(const PVR_CHANNEL &channel)
+PVR_ERROR OpenDialogChannelSettings(const PVR_CHANNEL &channel)
 {
   if (m_dataProc)
   {
@@ -244,7 +244,7 @@ PVR_ERROR DialogChannelSettings(const PVR_CHANNEL &channel)
   return PVR_ERROR_SERVER_ERROR;
 }
 
-PVR_ERROR DialogAddChannel(const PVR_CHANNEL &channel)
+PVR_ERROR OpenDialogChannelAdd(const PVR_CHANNEL &channel)
 {
   if (m_dataProc)
   {
