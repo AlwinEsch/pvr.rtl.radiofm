@@ -24,7 +24,7 @@
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_codec.h"
 #include "kodi/libXBMC_pvr.h"
-#include "kodi/libXBMC_gui.h"
+#include "kodi/libKODI_guilib.h"
 #include "kodi/DVDDemuxPacket.h"
 #include "kodi/util/XMLUtils.h"
 #include "kodi/util/StdString.h"
@@ -37,7 +37,7 @@ extern std::string                   g_strUserPath;
 extern std::string                   g_strClientPath;
 extern ADDON::CHelper_libXBMC_addon *KODI;
 extern CHelper_libXBMC_codec        *CODEC;
-extern CHelper_libXBMC_gui          *GUI;
+extern CHelper_libKODI_guilib       *GUI;
 extern CHelper_libXBMC_pvr          *PVR;
 
 #define XBMC KODI
