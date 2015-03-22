@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="pvr.rtl.radiofm"
-  version="0.0.4"
+  version="0.0.5"
   name="RTL-SDR FM Radio Client"
   provider-name="Alwin Esch, Team XBMC">
   <requires>
     <c-pluff version="0.1"/>
-    <import addon="xbmc.pvr" version="1.9.5"/>
+    <import addon="xbmc.pvr" version="1.9.6"/>
     <import addon="xbmc.codec" version="1.0.1"/>
     <import addon="kodi.guilib" version="5.8.0"/>
   </requires>
