@@ -70,7 +70,7 @@ public:
   /*!
    * Intern of addon used functions
    */
-  bool LoadChannelData(void);
+  bool LoadChannelData(bool initial);
   bool SaveChannelData(void);
   bool SetChannel(const PVR_CHANNEL &channel);
   unsigned int CreateNewUniqueId() { return m_UniqueIdNextNew++; }

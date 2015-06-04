@@ -52,7 +52,7 @@ cRadioReceiver::cRadioReceiver()
   m_StreamActive    = false;
   m_SettingsDialog  = NULL;
 
-  LoadChannelData();
+  LoadChannelData(true);
 }
 
 cRadioReceiver::~cRadioReceiver()
@@ -653,21 +653,32 @@ std::string cRadioReceiver::GetSettingsFile() const
   return settingFile;
 }
 
-bool cRadioReceiver::LoadChannelData(void)
+bool cRadioReceiver::LoadChannelData(bool initial)
 {
   TiXmlDocument xmlDoc;
   string strSettingsFile = GetSettingsFile();
 
   if (!xmlDoc.LoadFile(strSettingsFile))
   {
-    KODI->Log(LOG_ERROR, "invalid demo data (no/invalid data file found at '%s')", strSettingsFile.c_str());
+    if (initial)
+    {
+      if (!SaveChannelData())
+      {
+        KODI->Log(LOG_ERROR, "failed to create initial settings data file at '%s')", strSettingsFile.c_str());
+        return false;
+      }
+      return true;
+    }
+    else
+      KODI->Log(LOG_ERROR, "invalid settings data (no/invalid data file found at '%s')", strSettingsFile.c_str());
     return false;
   }
 
   TiXmlElement *pRootElement = xmlDoc.RootElement();
   if (strcmp(pRootElement->Value(), "radio") != 0)
   {
-    KODI->Log(LOG_ERROR, "invalid radio data (no <radio> tag found)");
+    if (!initial)
+      KODI->Log(LOG_ERROR, "invalid radio data (no <radio> tag found)");
     return false;
   }
 
