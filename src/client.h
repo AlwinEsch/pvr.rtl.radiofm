@@ -27,10 +27,10 @@
 #include "kodi/libKODI_guilib.h"
 #include "kodi/DVDDemuxPacket.h"
 #include "kodi/util/XMLUtils.h"
-#include "kodi/util/StdString.h"
-#include "kodi/util/util.h"
-#include "kodi/util/timeutils.h"
-#include "kodi/threads/threads.h"
+#include "platform/util/StdString.h"
+#include "platform/util/util.h"
+#include "platform/util/timeutils.h"
+#include "platform/threads/threads.h"
 
 extern bool                          m_bCreated;
 extern std::string                   g_strUserPath;

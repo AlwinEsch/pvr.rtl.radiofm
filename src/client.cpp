@@ -22,7 +22,7 @@
 
 #include "client.h"
 #include "kodi/xbmc_pvr_dll.h"
-#include "kodi/util/util.h"
+#include "platform/util/util.h"
 
 #include "RadioReceiver.h"
 #include "ChannelSettings.h"
