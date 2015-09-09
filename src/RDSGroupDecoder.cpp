@@ -28,7 +28,6 @@
 
 //#define IMPROVE_CHECK 1
 
-using namespace std;
 using namespace ADDON;
 
 /**

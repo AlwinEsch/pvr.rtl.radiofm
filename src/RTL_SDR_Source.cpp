@@ -28,7 +28,6 @@
 #include "RadioReceiver.h"
 #include "RTL_SDR_Source.h"
 
-using namespace std;
 using namespace ADDON;
 
 cRtlSdrSource::cRtlSdrSource(cRadioReceiver *proc)
@@ -186,7 +185,7 @@ int cRtlSdrSource::GetTunerGain()
   return rtlsdr_get_tuner_gain(m_DevicePtr);
 }
 
-bool cRtlSdrSource::GetTunerGains(vector<int> &gains)
+bool cRtlSdrSource::GetTunerGains(std::vector<int> &gains)
 {
   int num_gains = rtlsdr_get_tuner_gains(m_DevicePtr, NULL);
   if (num_gains <= 0)
@@ -199,7 +198,7 @@ bool cRtlSdrSource::GetTunerGains(vector<int> &gains)
   return true;
 }
 
-bool cRtlSdrSource::GetDeviceNames(vector<string> &result)
+bool cRtlSdrSource::GetDeviceNames(std::vector<std::string> &result)
 {
   int device_count = rtlsdr_get_device_count();
   if (device_count <= 0)
@@ -207,7 +206,7 @@ bool cRtlSdrSource::GetDeviceNames(vector<string> &result)
 
   result.reserve(device_count);
   for (int i = 0; i < device_count; i++)
-    result.push_back(string(rtlsdr_get_device_name(i)));
+    result.push_back(std::string(rtlsdr_get_device_name(i)));
 
   return true;
 }

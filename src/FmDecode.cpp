@@ -30,7 +30,6 @@
 #include "RadioReceiver.h"
 #include "RTL_SDR_Source.h"
 
-using namespace std;
 using namespace ADDON;
 
 /* ****************  class cFineTuner  **************** */
@@ -192,14 +191,14 @@ bool cPilotPhaseLock::Process(const RealType *samples_in, RealType *samples_out,
       phase_err = -1;            //!< We are more than 45 degrees ahead of the input.
 
     //! Detect pilot level (conservative).
-    m_pilotLevel = min(m_pilotLevel, phasor_i);
+    m_pilotLevel = std::min(m_pilotLevel, phasor_i);
 
     //! Run phase error through loop filter and update frequency estimate.
     m_freq += m_loopfilter_b0 * phase_err + m_loopfilter_b1 * m_loopfilter_x1;
     m_loopfilter_x1 = phase_err;
 
     //! Limit frequency to allowable range.
-    m_freq = max(m_minfreq, min(m_maxfreq, m_freq));
+    m_freq = std::max(m_minfreq, std::min(m_maxfreq, m_freq));
 
     //! Update locked phase.
     m_phase += m_freq;

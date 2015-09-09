@@ -26,7 +26,6 @@
 #include "ChannelSettings.h"
 #include "FmDecode.h"
 
-using namespace std;
 using namespace ADDON;
 using namespace PLATFORM;
 
@@ -106,7 +105,7 @@ PVR_ERROR cRadioReceiver::GetChannels(ADDON_HANDLE handle)
     FMRadioChannel &channel = m_channels.at(iChannelPtr);
     PVR_CHANNEL kodiChannel;
     memset(&kodiChannel, 0, sizeof(PVR_CHANNEL));
-    string name = CreateChannelName(channel);
+    std::string name = CreateChannelName(channel);
 
     kodiChannel.iUniqueId         = channel.iUniqueId;
     kodiChannel.bIsRadio          = true;
@@ -188,7 +187,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   m_AudioSourceSize             = 0;
   m_AudioSourceBufferWarning    = false;
 
-  vector<string> devnames;
+  std::vector<std::string> devnames;
   if (!cRtlSdrSource::GetDeviceNames(devnames))
   {
     KODI->Log(LOG_ERROR, "No devices present");
@@ -220,7 +219,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   //! Check LNA gain.
   if (m_LnaGain != INT_MIN)
   {
-    vector<int> gains;
+    std::vector<int> gains;
     m_RtlSdrReceiver.GetTunerGains(gains);
     if (find(gains.begin(), gains.end(), m_LnaGain) == gains.end())
     {
@@ -260,11 +259,11 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   // The baseband signal is empty above 100 kHz, so we can
   // downsample to ~ 200 kS/s without loss of information.
   // This will speed up later processing stages.
-  unsigned int downsample = max(1, int(m_IfRate / 215.0e3));
+  unsigned int downsample = std::max(1, int(m_IfRate / 215.0e3));
   KODI->Log(LOG_INFO, "baseband downsampling factor %u", downsample);
 
   // Prevent aliasing at very low output sample rates.
-  double bandwidth_pcm = min(DEFAULT_BANDWIDTH_PCM, 0.45 * m_PCMRate);
+  double bandwidth_pcm = std::min(DEFAULT_BANDWIDTH_PCM, 0.45 * m_PCMRate);
   KODI->Log(LOG_INFO, "audio sample rate: %.0f", m_PCMRate);
   KODI->Log(LOG_INFO, "audio bandwidth:   %.3f kHz", bandwidth_pcm * 1.0e-3);
 
@@ -645,7 +644,7 @@ void cRadioReceiver::RegisterDialog(cChannelSettings *dialog)
  */
 std::string cRadioReceiver::GetSettingsFile() const
 {
-  string settingFile = g_strClientPath;
+  std::string settingFile = g_strClientPath;
   if (settingFile.at(settingFile.size() - 1) == '\\' ||
       settingFile.at(settingFile.size() - 1) == '/')
     settingFile.append("PVRFMRadioAddonSettings.xml");
@@ -657,7 +656,7 @@ std::string cRadioReceiver::GetSettingsFile() const
 bool cRadioReceiver::LoadChannelData(bool initial)
 {
   TiXmlDocument xmlDoc;
-  string strSettingsFile = GetSettingsFile();
+  std::string strSettingsFile = GetSettingsFile();
 
   if (!xmlDoc.LoadFile(strSettingsFile))
   {

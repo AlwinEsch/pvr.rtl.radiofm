@@ -24,8 +24,6 @@
 
 #include "FreqShift.h"
 
-using namespace std;
-
 cFreqShift::cFreqShift(RealType NcoFreq, RealType InRate)
 {
   m_NcoTime = 0.0;
