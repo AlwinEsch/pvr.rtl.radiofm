@@ -451,7 +451,7 @@ void cRadioReceiver::EndDataBuffer()
 bool cRadioReceiver::SourceGetSamples(std::vector<ComplexType> &samples)
 {
   while (m_AudioSourceBuffer.empty() && !m_AudioSourceEndMarked)
-    m_AudioSourceEvent.Sleep(1000);
+    m_AudioSourceEvent.Sleep(500);
 
   CLockObject lock(m_AudioSourceMutex);
 
