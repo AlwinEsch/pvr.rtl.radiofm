@@ -8,6 +8,7 @@ enable_language(CXX)
 
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
+find_package(TinyXML REQUIRED)
 
 if (NOT WIN32)
   add_definitions(-DUSE_DEMUX -fPIC -g -O2)
