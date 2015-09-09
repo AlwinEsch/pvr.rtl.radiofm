@@ -89,14 +89,14 @@ include_directories(
 ########################################################################
 # Create uninstall target
 ########################################################################
-configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
-@ONLY)
+#configure_file(
+#    ${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in
+#    ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+#@ONLY)
 
-add_custom_target(uninstall
-    ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
-)
+#add_custom_target(uninstall
+#    ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+#)
 
 ########################################################################
 # Install udev rules
