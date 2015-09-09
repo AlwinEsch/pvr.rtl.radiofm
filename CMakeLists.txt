@@ -6,9 +6,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_SOURCE_
 
 enable_language(CXX)
 
+find_package(TinyXML REQUIRED)
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
-find_package(TinyXML REQUIRED)
+find_package(platform REQUIRED)
 
 if (NOT WIN32)
   add_definitions(-DUSE_DEMUX -fPIC -g -O2)
@@ -17,6 +18,7 @@ endif()
 include_directories(${kodiplatform_INCLUDE_DIRS}
                     ${platform_INCLUDE_DIRS}
                     ${KODI_INCLUDE_DIR}
+                    ${TINYXML_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/lib/rtl-sdr/include)
 
 add_subdirectory(lib/rtl-sdr)
@@ -33,7 +35,10 @@ set(BASIC_SOURCES src/client.cpp
                   src/RDSProcess.cpp
                   src/ChannelSettings.cpp)
 
-set(DEPLIBS ${platform_LIBRARIES} rtlsdr_static)
+set(DEPLIBS ${kodiplatform_LIBRARIES}
+            ${platform_LIBRARIES}
+            ${TINYXML_LIBRARIES}
+            rtlsdr_static)
 
 build_addon(pvr.rtl.radiofm BASIC DEPLIBS)
 
