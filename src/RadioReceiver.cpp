@@ -64,15 +64,15 @@ cRadioReceiver::~cRadioReceiver()
 
 std::string cRadioReceiver::CreateChannelName(FMRadioChannel &channel) const
 {
-  CStdString name;
+  std::string name;
   if (!channel.strChannelName.empty() && channel.strChannelName != "-")
     name = StringUtils::Trim(channel.strChannelName);
   else if (channel.fChannelFreq >= 87500000.0f)
-    name.Format("FM %.01f MHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000000.0f);
+    name = StringUtils::Format("FM %.01f MHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000000.0f);
   else if (channel.fChannelFreq >= 531000.0f)
-    name.Format("MF %.01f ḱHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000.0f);
+    name = StringUtils::Format("MF %.01f ḱHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000.0f);
   else if (channel.fChannelFreq >= 153000.0f)
-    name.Format("LF %.01f ḱHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000.0f);
+    name = StringUtils::Format("LF %.01f ḱHz", channel.strChannelName.c_str(), channel.fChannelFreq / 1000.0f);
 
   return name;
 }
@@ -582,12 +582,11 @@ bool cRadioReceiver::GetSignalStatus(PVR_SIGNAL_STATUS &qualityinfo)
   float interfaceLevel = 20*log10(m_FMDecoder->GetInterfaceLevel());
   float audioLevel = 20*log10(m_AudioLevel) + 3.01;
 
-  CStdString freq;
-  freq.Format("Freq.=%8.4fMHz - %s - IF=%+5.1fdB  BB=%+5.1fdB  Audio=%+5.1fdB",
-                m_FMDecoder->StereoDetected() ? "Stereo" : "Mono",
-                (m_activeTunerFreq + m_FMDecoder->GetTuningOffset()) * 1.0e-6,
-                interfaceLevel, 20*log10(m_FMDecoder->GetBasebandLevel()) + 3.01,
-                audioLevel);
+  std::string freq = StringUtils::Format("Freq.=%8.4fMHz - %s - IF=%+5.1fdB  BB=%+5.1fdB  Audio=%+5.1fdB",
+                                          m_FMDecoder->StereoDetected() ? "Stereo" : "Mono",
+                                          (m_activeTunerFreq + m_FMDecoder->GetTuningOffset()) * 1.0e-6,
+                                          interfaceLevel, 20*log10(m_FMDecoder->GetBasebandLevel()) + 3.01,
+                                          audioLevel);
 
   strncpy(qualityinfo.strAdapterName, m_RtlSdrReceiver.GetDeviceName().c_str(), sizeof(qualityinfo.strAdapterName));
   strncpy(qualityinfo.strAdapterStatus, freq.c_str(), sizeof(qualityinfo.strAdapterStatus));

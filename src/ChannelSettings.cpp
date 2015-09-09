@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include <limits.h>
+#include "platform/util/StringUtils.h"
 
 #include "ChannelSettings.h"
 #include "RadioReceiver.h"
@@ -141,9 +142,7 @@ void *cChannelSettings::Process()
     bool stereo;
     if (m_Source->GetSignalStatus(interfaceLevel, audioLevel, stereo))
     {
-      CStdString freqStr;
-      freqStr.Format("IF=%+5.1fdB Audio=%+5.1fdB", interfaceLevel, audioLevel);
-      m_window->SetControlLabel(CONTROL_LABEL_LEVEL, freqStr.c_str());
+      m_window->SetControlLabel(CONTROL_LABEL_LEVEL, StringUtils::Format("IF=%+5.1fdB Audio=%+5.1fdB", interfaceLevel, audioLevel).c_str());
 
       if ((m_AutoTuneUp || m_AutoTuneDown) && !m_AutoTuneIgnore)
       {
@@ -321,9 +320,7 @@ void cChannelSettings::UpdateFreq(uint32_t freq)
 {
   uint32_t newFreq = freq + 0.25 * m_Source->GetSource()->GetSampleRate();
 
-  CStdString freqStr;
-  freqStr.Format("%.01f MHz", (float)freq/1000000);
-  m_window->SetControlLabel(CONTROL_LABEL_FREQ, freqStr.c_str());
+  m_window->SetControlLabel(CONTROL_LABEL_FREQ, StringUtils::Format("%.01f MHz", (float)freq/1000000).c_str());
   if (m_Source->IsActive())
     m_Source->GetSource()->SetFrequency(newFreq);
 
