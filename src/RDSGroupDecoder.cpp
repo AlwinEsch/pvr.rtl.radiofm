@@ -20,11 +20,11 @@
  */
 
 #include  <string.h>
+#include "platform/util/StringUtils.h"
 
 #include "client.h"
 #include "RadioReceiver.h"
 #include "RDSGroupDecoder.h"
-#include "utils.h"
 
 //#define IMPROVE_CHECK 1
 

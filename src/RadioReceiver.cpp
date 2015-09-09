@@ -20,10 +20,11 @@
  *
  */
 
+#include "platform/util/StringUtils.h"
+
 #include "RadioReceiver.h"
 #include "ChannelSettings.h"
 #include "FmDecode.h"
-#include "utils.h"
 
 using namespace std;
 using namespace ADDON;
