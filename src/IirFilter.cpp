@@ -86,7 +86,7 @@ bool cIirFilter::Init(eFilterType type, RealType F0Freq, RealType FilterQ, RealT
 
 void cIirFilter::Process(ComplexType* buffer, unsigned int length)
 {
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     RealType w0a = buffer[i].real() - m_A1 * m_w1a - m_A2 * m_w2a;
     RealType w0b = buffer[i].imag() - m_A1 * m_w1b - m_A2 * m_w2b;
@@ -102,7 +102,7 @@ void cIirFilter::Process(ComplexType* buffer, unsigned int length)
 
 void cIirFilter::Process(RealType* buffer, unsigned int length)
 {
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     RealType w0 = buffer[i] - m_A1 * m_w1a - m_A2 * m_w2a;
     buffer[i] = m_B0 * w0 + m_B1 * m_w1a + m_B2 * m_w2a;
@@ -113,7 +113,7 @@ void cIirFilter::Process(RealType* buffer, unsigned int length)
 
 void cIirFilter::ProcessTwo(RealType* bufferA, RealType* bufferB, unsigned int length)
 {
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     RealType w0a = bufferA[i] - m_A1 * m_w1a - m_A2 * m_w2a;
     RealType w0b = bufferB[i] - m_A1 * m_w1b - m_A2 * m_w2b;

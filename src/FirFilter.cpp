@@ -55,10 +55,10 @@ cFirFilter::cFirFilter()
  */
 RealType cFirFilter::Izero(RealType x)
 {
-  RealType x2 = x / 2.0;
-  RealType sum = 1.0;
-  RealType ds = 1.0;
-  RealType di = 1.0;
+  RealType x2 = x / 2.0f;
+  RealType sum = 1.0f;
+  RealType ds = 1.0f;
+  RealType di = 1.0f;
   RealType errorlimit = 1e-9;
   RealType tmp;
 
@@ -99,18 +99,18 @@ int cFirFilter::InitLPFilter(unsigned int NumTaps, RealType Scale, RealType Asto
   //! create normalized frequency parameters
   RealType normFpass = Fpass/Fsamprate;
   RealType normFstop = Fstop/Fsamprate;
-  RealType normFcut = (normFstop + normFpass) / 2.0;  //!< low pass filter 6dB cutoff
+  RealType normFcut = (normFstop + normFpass) / 2.0f;  //!< low pass filter 6dB cutoff
 
   //! calculate Kaiser-Bessel window shape factor, Beta, from stopband attenuation
-  if(Astop < 20.96)
+  if(Astop < 20.96f)
     Beta = 0;
-  else if(Astop >= 50.0)
-    Beta = .1102 * (Astop - 8.71);
+  else if(Astop >= 50.0f)
+    Beta = .1102 * (Astop - 8.71f);
   else
-    Beta = .5842 * MPOW( (Astop-20.96), 0.4) + .07886 * (Astop - 20.96);
+    Beta = .5842 * MPOW( (Astop-20.96f), 0.4) + .07886f * (Astop - 20.96f);
 
   //! Now Estimate number of filter taps required based on filter specs
-  m_NumTaps = (Astop - 8.0) / (2.285*K_2PI*(normFstop - normFpass) ) + 1;
+  m_NumTaps = (Astop - 8.0f) / (2.285f*K_2PI*(normFstop - normFpass) ) + 1;
 
   //! clamp range of filter taps
   if(m_NumTaps > MAX_NUMCOEF )
@@ -123,7 +123,7 @@ int cFirFilter::InitLPFilter(unsigned int NumTaps, RealType Scale, RealType Asto
 
   RealType fCenter = .5*(RealType)(m_NumTaps-1);
   RealType izb = Izero(Beta);    //!< precalculate denominator since is same for all points
-  for(unsigned int  n=0; n < m_NumTaps; n++)
+  for(unsigned int  n=0; n < m_NumTaps; ++n)
   {
     RealType x = (RealType)n - fCenter;
     RealType c;
@@ -133,16 +133,16 @@ int cFirFilter::InitLPFilter(unsigned int NumTaps, RealType Scale, RealType Asto
     else
       c = MSIN(K_2PI*x*normFcut)/(K_PI*x);
     //! calculate Kaiser window and multiply to get coefficient
-    x = ((RealType)n - ((RealType)m_NumTaps-1.0)/2.0 ) / (((RealType)m_NumTaps-1.0)/2.0);
+    x = ((RealType)n - ((RealType)m_NumTaps-1.0f)/2.0f ) / (((RealType)m_NumTaps-1.0f)/2.0f);
     m_Coef[n] = Scale * c * Izero( Beta * MSQRT(1 - (x*x) ) )  / izb;
   }
 
   //! make a 2x length array for FIR flat calculation efficiency
-  for (unsigned int n = 0; n < m_NumTaps; n++)
+  for (unsigned int n = 0; n < m_NumTaps; ++n)
     m_Coef[n+m_NumTaps] = m_Coef[n];
 
   //! copy into complex coef buffers
-  for (unsigned int n = 0; n < m_NumTaps*2; n++)
+  for (unsigned int n = 0; n < m_NumTaps*2; ++n)
   {
     m_ICoef[n] = m_Coef[n];
     m_QCoef[n] = m_Coef[n];
@@ -167,15 +167,18 @@ int cFirFilter::InitLPFilter(unsigned int NumTaps, RealType Scale, RealType Asto
  */
 void cFirFilter::GenerateHBFilter(RealType FreqOffset)
 {
-  for (unsigned int n = 0; n < m_NumTaps; n++)
+  for (unsigned int n = 0; n < m_NumTaps; ++n)
   {
     //! apply complex frequency shift transform to low pass filter coefficients
-    m_ICoef[n] = 2.0 * m_Coef[n] * MCOS( (K_2PI*FreqOffset/m_SampleRate)*((RealType)n - ( (RealType)(m_NumTaps-1)/2.0 ) ) );
-    m_QCoef[n] = 2.0 * m_Coef[n] * MSIN( (K_2PI*FreqOffset/m_SampleRate)*((RealType)n - ( (RealType)(m_NumTaps-1)/2.0 ) ) );
+    RealType psin;
+    RealType pcos;
+    sincos_HP((K_2PI*FreqOffset/m_SampleRate)*((RealType)n - ( (RealType)(m_NumTaps-1)/2.0 ) ), psin, pcos);
+    m_ICoef[n] = 2.0f * m_Coef[n] * pcos;
+    m_QCoef[n] = 2.0f * m_Coef[n] * psin;
   }
 
   //! make a 2x length array for FIR flat calculation efficiency
-  for (unsigned int n = 0; n < m_NumTaps; n++)
+  for (unsigned int n = 0; n < m_NumTaps; ++n)
   {
     m_ICoef[n+m_NumTaps] = m_ICoef[n];
     m_QCoef[n+m_NumTaps] = m_QCoef[n];
@@ -208,15 +211,15 @@ int cFirFilter::InitHPFilter(unsigned int NumTaps, RealType Scale, RealType Asto
   RealType normFcut = (normFstop + normFpass)/2.0;  //high pass filter 6dB cutoff
 
   //! calculate Kaiser-Bessel window shape factor, Beta, from stopband attenuation
-  if(Astop < 20.96)
+  if(Astop < 20.96f)
     Beta = 0;
-  else if(Astop >= 50.0)
-    Beta = .1102 * (Astop - 8.71);
+  else if(Astop >= 50.0f)
+    Beta = .1102f * (Astop - 8.71f);
   else
-    Beta = .5842 * MPOW( (Astop-20.96), 0.4) + .07886 * (Astop - 20.96);
+    Beta = .5842f * MPOW( (Astop-20.96f), 0.4f) + .07886f * (Astop - 20.96f);
 
   //! Now Estimate number of filter taps required based on filter specs
-  m_NumTaps = (Astop - 8.0) / (2.285*K_2PI*(normFpass - normFstop ) ) + 1;
+  m_NumTaps = (Astop - 8.0f) / (2.285f*K_2PI*(normFpass - normFstop ) ) + 1;
 
   //! clamp range of filter taps
   if(m_NumTaps>(MAX_NUMCOEF-1) )
@@ -230,7 +233,7 @@ int cFirFilter::InitHPFilter(unsigned int NumTaps, RealType Scale, RealType Asto
     m_NumTaps = NumTaps;
 
   RealType izb = Izero(Beta);    //!< precalculate denominator since is same for all points
-  RealType fCenter = .5*(RealType)(m_NumTaps-1);
+  RealType fCenter = .5f*(RealType)(m_NumTaps-1);
   for(unsigned int  n=0; n < m_NumTaps; n++)
   {
     RealType x = (RealType)n - (RealType)(m_NumTaps-1)/2.0;
@@ -242,23 +245,23 @@ int cFirFilter::InitHPFilter(unsigned int NumTaps, RealType Scale, RealType Asto
       c = MSIN(K_PI*x)/(K_PI*x) - MSIN(K_2PI*x*normFcut)/(K_PI*x);
 
     //! calculate Kaiser window and multiply to get coefficient
-    x = ((RealType)n - ((RealType)m_NumTaps-1.0)/2.0 ) / (((RealType)m_NumTaps-1.0)/2.0);
+    x = ((RealType)n - ((RealType)m_NumTaps-1.0f)/2.0f ) / (((RealType)m_NumTaps-1.0f)/2.0f);
     m_Coef[n] = Scale * c * Izero( Beta * MSQRT(1 - (x*x) ) )  / izb;
   }
 
   //! make a 2x length array for FIR flat calculation efficiency
-  for (unsigned int n = 0; n < m_NumTaps; n++)
+  for (unsigned int n = 0; n < m_NumTaps; ++n)
     m_Coef[n+m_NumTaps] = m_Coef[n];
 
   //! copy into complex coef buffers
-  for (unsigned int n = 0; n < m_NumTaps*2; n++)
+  for (unsigned int n = 0; n < m_NumTaps*2; ++n)
   {
     m_ICoef[n] = m_Coef[n];
     m_QCoef[n] = m_Coef[n];
   }
 
   //! Initialize the FIR buffers and state
-  for (unsigned int i=0; i<m_NumTaps; i++)
+  for (unsigned int i=0; i<m_NumTaps; ++i)
   {
     m_rZBuf[i] = 0.0;
     m_cZBuf[i] = 0.0;
@@ -305,12 +308,12 @@ void cFirFilter::InitConstFir( unsigned int NumTaps, const RealType* pCoef, Real
     m_NumTaps = MAX_NUMCOEF;
   else
     m_NumTaps = NumTaps;
-  for (unsigned int i=0; i<m_NumTaps; i++)
+  for (unsigned int i=0; i<m_NumTaps; ++i)
   {
     m_Coef[i] = pCoef[i];
     m_Coef[m_NumTaps+i] = pCoef[i];  //!< create duplicate for calculation efficiency
   }
-  for (unsigned int i=0; i<m_NumTaps; i++)
+  for (unsigned int i=0; i<m_NumTaps; ++i)
   {  //! zero input buffers
     m_rZBuf[i] = 0.0;
     m_cZBuf[i] = 0.0;
@@ -332,7 +335,7 @@ void cFirFilter::Process(ComplexType* buffer, unsigned int length)
   RealType* HIptr;
   RealType* HQptr;
 
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     m_cZBuf[m_State] = buffer[i];
     HIptr = m_ICoef + m_NumTaps - m_State;
@@ -361,12 +364,12 @@ void cFirFilter::Process(RealType* buffer, unsigned int length)
   RealType acc;
   const RealType* Hptr;
 
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     m_rZBuf[m_State] = buffer[i];
     Hptr = &m_Coef[m_NumTaps - m_State];
     acc = Hptr[0] * m_rZBuf[0];  //do the 1st MAC
-    for (unsigned int j=1; j<m_NumTaps; j++)
+    for (unsigned int j=1; j<m_NumTaps; ++j)
       acc += Hptr[j] * m_rZBuf[j];  //do the remaining MACs
 
     if(--m_State < 0)
@@ -390,7 +393,7 @@ void cFirFilter::ProcessTwo(RealType* bufferA, RealType* bufferB, unsigned int l
   RealType* HIptr;
   RealType* HQptr;
 
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     m_cZBuf[m_State] = ComplexType(bufferA[i], bufferB[i]);
     HIptr = m_ICoef + m_NumTaps - m_State;
@@ -398,7 +401,7 @@ void cFirFilter::ProcessTwo(RealType* bufferA, RealType* bufferB, unsigned int l
 
     valueA = (*HIptr++ * m_cZBuf[0].real());    //do the first MAC
     valueB = (*HQptr++ * m_cZBuf[0].imag());
-    for (unsigned int j=1; j<m_NumTaps; j++)
+    for (unsigned int j=1; j<m_NumTaps; ++j)
     {
       valueA += (*HIptr++ * m_cZBuf[j].real());    //do the remaining MACs
       valueB += (*HQptr++ * m_cZBuf[j].imag());
@@ -425,14 +428,14 @@ void cFirFilter::Process(ComplexType* InBuf, ComplexType* OutBuf, unsigned int l
   RealType* HIptr;
   RealType* HQptr;
 
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     m_cZBuf[m_State] = InBuf[i];
     HIptr = m_ICoef + m_NumTaps - m_State;
     HQptr = m_QCoef + m_NumTaps - m_State;
 
     acc = ComplexType((*HIptr++ * m_cZBuf[0].real()), (*HQptr++ * m_cZBuf[0].imag()));
-    for (unsigned int j = 1; j < m_NumTaps; j++)
+    for (unsigned int j = 1; j < m_NumTaps; ++j)
       acc += ComplexType((*HIptr++ * m_cZBuf[j].real()), (*HQptr++ * m_cZBuf[j].imag()));
 
     if (--m_State < 0)
@@ -455,14 +458,14 @@ void cFirFilter::Process(RealType* InBuf, ComplexType* OutBuf, unsigned int leng
   RealType* HIptr;
   RealType* HQptr;
 
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     m_cZBuf[m_State] = ComplexType(InBuf[i], InBuf[i]);
     HIptr = m_ICoef + m_NumTaps - m_State;
     HQptr = m_QCoef + m_NumTaps - m_State;
 
     acc = ComplexType(*HIptr++ * m_cZBuf[0].real(), *HQptr++ * m_cZBuf[0].imag());
-    for (unsigned int j = 1; j < m_NumTaps; j++)
+    for (unsigned int j = 1; j < m_NumTaps; ++j)
       acc = ComplexType(*HIptr++ * m_cZBuf[j].real(), *HQptr++ * m_cZBuf[j].imag());    //do the remaining MACs
 
     if (--m_State < 0)

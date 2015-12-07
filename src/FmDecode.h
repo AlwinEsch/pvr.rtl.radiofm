@@ -76,7 +76,7 @@ public:
    * bandwidth  :: bandwidth relative to sample frequency
    * minsignal  :: minimum pilot amplitude
    */
-  cPilotPhaseLock(double freq, double bandwidth, double minsignal);
+  cPilotPhaseLock(RealType freq, RealType bandwidth, RealType minsignal);
 
   /*!
    * Process samples and extract 19 kHz pilot tone.
@@ -85,7 +85,7 @@ public:
   bool Process(const RealType *samples_in, RealType *samples_out, unsigned int length);
 
   /*! Return detected amplitude of pilot signal. */
-  double GetPilotLevel() const
+  RealType GetPilotLevel() const
   {
     return 2 * m_pilotLevel;
   }
@@ -162,16 +162,16 @@ public:
    * Return actual frequency offset in Hz with respect to receiver LO.
    * @return frequency
    */
-  double GetTuningOffset() const
+  RealType GetTuningOffset() const
   {
-    double tuned = - m_TuningShift * m_SampleRate_Interface / double(m_TuningTableSize);
+    RealType tuned = - m_TuningShift * m_SampleRate_Interface / RealType(m_TuningTableSize);
     return tuned + m_BasebandMean * m_FrequencyDev;
   }
 
   /*!
    * Return RMS IF level (where full scale IQ signal is 1.0).
    */
-  double GetInterfaceLevel() const
+  RealType GetInterfaceLevel() const
   {
     return m_InterfaceLevel;
   }
@@ -179,7 +179,7 @@ public:
   /*!
    * Return RMS baseband signal level (where nominal level is 0.707).
    */
-  double GetBasebandLevel() const
+  RealType GetBasebandLevel() const
   {
     return m_BasebandLevel;
   }
@@ -187,7 +187,7 @@ public:
   /*!
    * Return amplitude of stereo pilot (nominal level is 0.1).
    */
-  double GetPilotLevel() const
+  RealType GetPilotLevel() const
   {
     return m_PilotPLL.GetPilotLevel();
   }
@@ -195,26 +195,26 @@ public:
 private:
   void InitDeemphasis(RealType Time, RealType SampleRate);
 
-  inline void SamplesMeanRMS(const RealType* samples, double& mean, double& rms, unsigned int n);
+  inline void SamplesMeanRMS(const RealType* samples, RealType& mean, RealType& rms, unsigned int n);
   inline ComplexType::value_type RMSLevelApprox(const ComplexType *samples, unsigned int length);
   inline void ProcessDeemphasisFilter(RealType* bufferA, RealType* bufferB, unsigned int length);
   inline void PhaseLockedLoop(ComplexType *signal, RealType *out, unsigned int dataSize);
 
-   cRadioReceiver          *m_proc;
-  const double              m_SampleRate_Interface;
-  const double              m_SampleRate_Baseband;
+  cRadioReceiver           *m_proc;
+  const RealType            m_SampleRate_Interface;
+  const RealType            m_SampleRate_Baseband;
   const int                 m_TuningTableSize;
   const int                 m_TuningShift;
-  const double              m_FrequencyDev;
+  const RealType            m_FrequencyDev;
   const unsigned int        m_Downsample;
-  const double              m_BandwidthInterface;
+  const RealType            m_BandwidthInterface;
 
   bool                      m_StereoDetected;
-  double                    m_InterfaceLevel;
-  double                    m_BasebandMean;
-  double                    m_BasebandLevel;
-  double                    m_AudioLevel;
-  double                    m_FMDeModGain;
+  RealType                  m_InterfaceLevel;
+  RealType                  m_BasebandMean;
+  RealType                  m_BasebandLevel;
+  RealType                  m_AudioLevel;
+  RealType                  m_FMDeModGain;
 
   ComplexType              *m_BufferIfTuned;
   ComplexType              *m_BufferDemod;

@@ -73,7 +73,7 @@ class cRadioReceiver;
 class cRDSRxSignalProcessor
 {
 public:
-  cRDSRxSignalProcessor(cRadioReceiver *proc, double SampleRate);
+  cRDSRxSignalProcessor(cRadioReceiver *proc, RealType SampleRate);
   virtual ~cRDSRxSignalProcessor();
   void Reset();
 
@@ -84,9 +84,9 @@ private:
   void ProcessNewRdsBit(int bit);
   uint32_t CheckBlock(uint32_t SyndromeOffset, int UseFec);
 
-  double              m_SampleRate;
+  RealType            m_SampleRate;
   cRDSGroupDecoder    m_Decoder;
-  double              m_ProcessRate;
+  RealType            m_ProcessRate;
 
   ComplexType        *m_ProcessArrayIn;
   ComplexType        *m_RdsRaw;              //variables for RDS processing
@@ -120,7 +120,7 @@ private:
   int                 m_BlockErrors;
   uint16_t            m_BlockData[4];
 
-  double              m_ClockLastValue;
+  RealType            m_ClockLastValue;
   bool                m_ClockInput;
   unsigned int        m_DataInputPrev;
 };
