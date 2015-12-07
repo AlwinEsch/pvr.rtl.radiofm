@@ -41,13 +41,13 @@ cFineTuner::cFineTuner(unsigned int table_size, int freq_shift)
 {
   m_table = new ComplexType[table_size];
 
-  double phase_step = K_2PI / double(table_size);
-  for (unsigned int i = 0; i < table_size; i++)
+  float phase_step = K_2PI / float(table_size);
+  for (unsigned int i = 0; i < table_size; ++i)
   {
-    double phi = (((int64_t)freq_shift * i) % table_size) * phase_step;
-    double pcos = MCOS(phi);
-    double psin = MSIN(phi);
-    m_table[i] = ComplexType(pcos, psin) * 2.0;
+    float phi = (((int64_t)freq_shift * i) % table_size) * phase_step;
+    float pcos = MCOS(phi);
+    float psin = MSIN(phi);
+    m_table[i] = ComplexType(pcos, psin) * 2.0f;
   }
 }
 
@@ -62,7 +62,7 @@ void cFineTuner::Process(const ComplexType *samples_in, ComplexType *samples_out
   unsigned int tblidx = m_index;
   unsigned int tblsiz = m_tableSize;
 
-  for (unsigned int i = 0; i < samples; i++)
+  for (unsigned int i = 0; i < samples; ++i)
   {
     samples_out[i] = samples_in[i] * m_table[tblidx];
     tblidx++;
@@ -77,7 +77,7 @@ void cFineTuner::Process(const ComplexType *samples_in, ComplexType *samples_out
 /* ****************  class cPilotPhaseLock  **************** */
 
 // Construct phase-locked loop.
-cPilotPhaseLock::cPilotPhaseLock(double freq, double bandwidth, double minsignal)
+cPilotPhaseLock::cPilotPhaseLock(RealType freq, RealType bandwidth, RealType minsignal)
 {
   /*!
    * This is a type-2, 4th order phase-locked loop.
@@ -98,19 +98,19 @@ cPilotPhaseLock::cPilotPhaseLock(double freq, double bandwidth, double minsignal
 
   //! Set valid signal threshold.
   m_minsignal  = minsignal;
-  m_lock_delay = int(20.0 / bandwidth);
+  m_lock_delay = int(20.0f / bandwidth);
   m_lock_cnt   = 0;
 
   //! Create 2nd order filter for I/Q representation of phase error.
   //! Filter has two poles, unit DC gain.
-  double p1 = exp(-1.146 * bandwidth * K_2PI);
-  double p2 = exp(-5.331 * bandwidth * K_2PI);
+  RealType p1 = exp(-1.146f * bandwidth * K_2PI);
+  RealType p2 = exp(-5.331f * bandwidth * K_2PI);
   m_phasor_a1 = - p1 - p2;
   m_phasor_a2 =   p1 * p2;
   m_phasor_b0 = 1 + m_phasor_a1 + m_phasor_a2;
 
   //! Create loop filter to stabilize the loop.
-  m_loopfilter_b0 = 0.62 * bandwidth * K_2PI;
+  m_loopfilter_b0 = 0.62f * bandwidth * K_2PI;
   m_loopfilter_b1 = - m_loopfilter_b0 * exp(-0.1153 * bandwidth * K_2PI);
 
   /*!
@@ -134,11 +134,11 @@ cPilotPhaseLock::cPilotPhaseLock(double freq, double bandwidth, double minsignal
 
 bool cPilotPhaseLock::Process(const RealType *samples_in, RealType *samples_out, unsigned int length)
 {
-  m_pilotLevel = 1000.0;
+  m_pilotLevel = 1000.0f;
 
   RealType psin;
   RealType pcos;
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
     //! Generate locked pilot tone.
 #if TARGET_WINDOWS
@@ -155,6 +155,8 @@ bool cPilotPhaseLock::Process(const RealType *samples_in, RealType *samples_out,
     }
 #elif (defined(__i386__) || defined(__x86_64__))
     asm volatile ("fsincos" : "=%&t" (pcos), "=%&u" (psin) : "0" (m_phase));
+#elif defined(__arm__)
+    sincos_LP(m_phase, psin, pcos);
 #else
     psin = MSIN(m_phase);    //178ns for sin/cos calc
     pcos = MCOS(m_phase);
@@ -246,7 +248,7 @@ cFmDecoder::cFmDecoder(cRadioReceiver *proc,
   , m_PilotPLL(                                         //!< Construct cPilotPhaseLock
          PILOT_FREQ / m_SampleRate_Baseband,      // freq
          50 / m_SampleRate_Baseband,              // bandwidth
-         0.04)                                    // minsignal
+         0.04f)                                   // minsignal
   , m_ReSampleInput(8 * downsample, 0.4 / downsample, downsample, true)
   , m_ReSampleMono(                                    //!< Construct DownsampleFilter for mono channel
         int(m_SampleRate_Baseband / 1000.0),               // filter_order
@@ -283,13 +285,13 @@ cFmDecoder::cFmDecoder(cRadioReceiver *proc,
    * Init phase-locked loop (PLL)
    */
   RealType fac        = K_2PI / m_SampleRate_Baseband;
-  RealType bandwidth  = 0.85 * m_SampleRate_Baseband;
-  RealType maxFreqDev = 0.95 * (0.5 * m_SampleRate_Baseband);
+  RealType bandwidth  = 0.85f * m_SampleRate_Baseband;
+  RealType maxFreqDev = 0.95f * (0.5f * m_SampleRate_Baseband);
 
-  m_NcoLLimit          = (-maxFreqDev) * fac;              //!< boundary for changes
-  m_NcoHLimit          = (+maxFreqDev) * fac;
-  m_PLLAlpha          = 0.125 * bandwidth * fac;          //!< pll bandwidth
-  m_PLLBeta           = (m_PLLAlpha * m_PLLAlpha) / 2.0;  //!< second order term
+  m_NcoLLimit         = (-maxFreqDev) * fac;              //!< boundary for changes
+  m_NcoHLimit         = (+maxFreqDev) * fac;
+  m_PLLAlpha          = 0.125f * bandwidth * fac;          //!< pll bandwidth
+  m_PLLBeta           = (m_PLLAlpha * m_PLLAlpha) / 2.0f;  //!< second order term
   Reset();
 }
 
@@ -311,27 +313,27 @@ void cFmDecoder::Reset()
   m_BasebandLevel     = 0;
   m_AudioLevel        = 0;
   m_DemodDCOffset     = 0;
-  m_NcoPhaseIncr      = 0.0;                              //!< this will change during runs
-  m_NcoPhase          = 0.0;
+  m_NcoPhaseIncr      = 0.0f;                              //!< this will change during runs
+  m_NcoPhase          = 0.0f;
 
   m_RDSProcess.Reset();
 }
 
 void cFmDecoder::InitDeemphasis(RealType Time, RealType SampleRate)  //!< create De-emphasis LP filter
 {
-  m_DeemphasisAlpha = (1.0 - MEXP(-1.0 / (SampleRate * Time)));
-  m_DeemphasisAveRe = 0.0;
-  m_DeemphasisAveIm = 0.0;
+  m_DeemphasisAlpha = (1.0f - MEXP(-1.0f / (SampleRate * Time)));
+  m_DeemphasisAveRe = 0.0f;
+  m_DeemphasisAveIm = 0.0f;
 }
 
 void cFmDecoder::ProcessDeemphasisFilter(RealType* bufferA, RealType* bufferB, unsigned int length)
 {
-  for (unsigned int i = 0; i < length; i++)
+  for (unsigned int i = 0; i < length; ++i)
   {
-    m_DeemphasisAveRe = (1.0 - m_DeemphasisAlpha) * m_DeemphasisAveRe + m_DeemphasisAlpha * bufferA[i];
-    bufferA[i] = m_DeemphasisAveRe * 2.0;
-    m_DeemphasisAveIm = (1.0 - m_DeemphasisAlpha) * m_DeemphasisAveIm + m_DeemphasisAlpha * bufferB[i];
-    bufferB[i] = m_DeemphasisAveIm * 2.0;
+    m_DeemphasisAveRe = (1.0f - m_DeemphasisAlpha) * m_DeemphasisAveRe + m_DeemphasisAlpha * bufferA[i];
+    bufferA[i] = m_DeemphasisAveRe * 2.0f;
+    m_DeemphasisAveIm = (1.0f - m_DeemphasisAlpha) * m_DeemphasisAveIm + m_DeemphasisAlpha * bufferB[i];
+    bufferB[i] = m_DeemphasisAveIm * 2.0f;
   }
 }
 
@@ -345,7 +347,7 @@ void cFmDecoder::PhaseLockedLoop(ComplexType *signal, RealType *out, unsigned in
   RealType    Cos;
 
   RealType dcOffset = m_DemodDCOffset;
-  for (unsigned int i = 0; i < dataSize; i++)
+  for (unsigned int i = 0; i < dataSize; ++i)
   {
 #if TARGET_WINDOWS
     RealType*  pdCosAns  = &Sin;
@@ -361,6 +363,8 @@ void cFmDecoder::PhaseLockedLoop(ComplexType *signal, RealType *out, unsigned in
     }
 #elif (defined(__i386__) || defined(__x86_64__))
     asm volatile ("fsincos" : "=%&t" (Cos), "=%&u" (Sin) : "0" (m_NcoPhase));  //126nS
+#elif defined(__arm__)
+    sincos_LP(m_NcoPhase, Sin, Cos);
 #else
     Sin = MSIN(m_NcoPhase);    //178ns for sin/cos calc
     Cos = MCOS(m_NcoPhase);
@@ -396,7 +400,7 @@ unsigned int cFmDecoder::ProcessStream(const ComplexType *samples_in, unsigned i
   m_FineTuner.Process(samples_in, m_BufferIfTuned, dataSize);
 
   //! Measure IF level.
-  m_InterfaceLevel = 0.95 * m_InterfaceLevel + 0.05 * RMSLevelApprox(m_BufferIfTuned, dataSize);
+  m_InterfaceLevel = 0.95f * m_InterfaceLevel + 0.05f * RMSLevelApprox(m_BufferIfTuned, dataSize);
 
   //! Perform first downsample to match 100000 Hz Format
   dataSize = m_ReSampleInput.Process(m_BufferIfTuned, m_BufferDemod, dataSize);
@@ -405,13 +409,13 @@ unsigned int cFmDecoder::ProcessStream(const ComplexType *samples_in, unsigned i
   PhaseLockedLoop(m_BufferDemod, m_BufferBaseband, dataSize);
 
   //! Handle RDS signal
-  m_RDSProcess.Process(m_BufferBaseband, dataSize);
+//  m_RDSProcess.Process(m_BufferBaseband, dataSize);
 
   //! Measure baseband level.
-  double baseband_mean, baseband_rms;
+  RealType baseband_mean, baseband_rms;
   SamplesMeanRMS(m_BufferBaseband, baseband_mean, baseband_rms, dataSize);
-  m_BasebandMean  = 0.95 * m_BasebandMean + 0.05 * baseband_mean;
-  m_BasebandLevel = 0.95 * m_BasebandLevel + 0.05 * baseband_rms;
+  m_BasebandMean  = 0.95f * m_BasebandMean + 0.05f * baseband_mean;
+  m_BasebandLevel = 0.95f * m_BasebandLevel + 0.05f * baseband_rms;
 
   //! Extract mono audio signal.
   unsigned int monoSize = m_ReSampleMono.Process(m_BufferBaseband, m_BufferMono, dataSize);
@@ -424,7 +428,7 @@ unsigned int cFmDecoder::ProcessStream(const ComplexType *samples_in, unsigned i
    * And multiply by two to get the full amplitude.
    * That's all.
    */
-  for (unsigned int i = 0; i < dataSize; i++)
+  for (unsigned int i = 0; i < dataSize; ++i)
     m_BufferRawStereo[i] *= 2 * m_BufferBaseband[i];
 
   /*!
@@ -449,12 +453,12 @@ unsigned int cFmDecoder::ProcessStream(const ComplexType *samples_in, unsigned i
     /*!>
      * Extract left/right channels from mono/stereo signals.
      */
-    for (unsigned int i = 0; i < dataSize; i++)
+    for (unsigned int i = 0; i < dataSize; ++i)
     {
       float m = m_BufferMono[i];
       float s = m_BufferStereo[i];
-      audio[2*i]   = (m + s) * 0.5;
-      audio[2*i+1] = (m - s) * 0.5;
+      audio[2*i]   = (m + s) * 0.5f;
+      audio[2*i+1] = (m - s) * 0.5f;
     }
   }
   else
@@ -462,9 +466,9 @@ unsigned int cFmDecoder::ProcessStream(const ComplexType *samples_in, unsigned i
     /*!>
      * Send only mono signal out
      */
-    for (unsigned int i = 0; i < dataSize; i++)
+    for (unsigned int i = 0; i < dataSize; ++i)
     {
-      float m = m_BufferMono[i] * 0.5;
+      float m = m_BufferMono[i] * 0.5f;
       audio[2*i]   = m;
       audio[2*i+1] = m;
     }
@@ -480,7 +484,7 @@ ComplexType::value_type cFmDecoder::RMSLevelApprox(const ComplexType *samples, u
   n = (n + 63) / 64;
 
   ComplexType::value_type level = 0;
-  for (unsigned int i = 0; i < n; i++)
+  for (unsigned int i = 0; i < n; ++i)
   {
     const ComplexType& s = samples[i];
     ComplexType::value_type re = s.real(), im = s.imag();
@@ -491,12 +495,12 @@ ComplexType::value_type cFmDecoder::RMSLevelApprox(const ComplexType *samples, u
 }
 
 /** Compute mean and RMS over a sample vector. */
-void cFmDecoder::SamplesMeanRMS(const RealType* samples, double& mean, double& rms, unsigned int n)
+void cFmDecoder::SamplesMeanRMS(const RealType* samples, RealType& mean, RealType& rms, unsigned int n)
 {
   RealType vsum = 0;
   RealType vsumsq = 0;
 
-  for (unsigned int i = 0; i < n; i++)
+  for (unsigned int i = 0; i < n; ++i)
   {
     RealType v = samples[i];
     vsum   += v;

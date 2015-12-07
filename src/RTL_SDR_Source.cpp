@@ -205,7 +205,7 @@ bool cRtlSdrSource::GetDeviceNames(std::vector<std::string> &result)
     return false;
 
   result.reserve(device_count);
-  for (int i = 0; i < device_count; i++)
+  for (int i = 0; i < device_count; ++i)
     result.push_back(std::string(rtlsdr_get_device_name(i)));
 
   return true;
@@ -222,7 +222,7 @@ void cRtlSdrSource::ReadAsyncCB(unsigned char *buf, uint32_t len, void *ctx)
   }
 
   thisClass->m_Samples.resize(thisClass->m_BlockLength);
-  for (unsigned int i = 0; i < thisClass->m_BlockLength; i++)
+  for (unsigned int i = 0; i < thisClass->m_BlockLength; ++i)
   {
     thisClass->m_Samples[i] = ComplexType((buf [2 * i    ] / (255.0/2.0) - 1.0),
                                           (buf [2 * i + 1] / (255.0/2.0) - 1.0));

@@ -42,7 +42,7 @@ void cFreqShift::Process(ComplexType* pInData, unsigned int InLength)
   ComplexType dtmp;
   ComplexType Osc;
 
-#if (defined(__i386__) || defined(__x86_64__) || defined(TARGET_WINDOWS))
+#if (defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(TARGET_WINDOWS))
   RealType  dPhaseAcc = m_NcoTime;
   RealType  dASMCos   = 0.0;
   RealType  dASMSin   = 0.0;
@@ -53,7 +53,7 @@ void cFreqShift::Process(ComplexType* pInData, unsigned int InLength)
 #endif
 
 //263uS using sin/cos or 70uS using quadrature osc or 200uS using _asm
-  for (unsigned int i = 0; i < InLength; i++)
+  for (unsigned int i = 0; i < InLength; ++i)
   {
     dtmp = pInData[i];
 #if TARGET_WINDOWS
@@ -72,6 +72,9 @@ void cFreqShift::Process(ComplexType* pInData, unsigned int InLength)
 #elif (defined(__i386__) || defined(__x86_64__))
     asm volatile ("fsincos" : "=%&t" (dASMCos), "=%&u" (dASMSin) : "0" (dPhaseAcc));
     dPhaseAcc += m_NcoInc;
+    Osc = ComplexType(dASMCos, dASMSin);
+#elif defined(__arm__)
+    sincos_LP(m_NcoTime, dASMSin, dASMCos);
     Osc = ComplexType(dASMCos, dASMSin);
 #else
     Osc = ComplexType(MCOS(m_NcoTime), MSIN(m_NcoTime));

@@ -64,7 +64,7 @@ const uint32_t PARCKH[16] =
   0x31B   // 11 0001 1011
 };
 
-cRDSRxSignalProcessor::cRDSRxSignalProcessor(cRadioReceiver *proc, double SampleRate)
+cRDSRxSignalProcessor::cRDSRxSignalProcessor(cRadioReceiver *proc, RealType SampleRate)
   : m_SampleRate(SampleRate)
   , m_Decoder(proc)
   , m_ProcessRate(31250.0)
@@ -258,6 +258,8 @@ void cRDSRxSignalProcessor::ProcessRdsPll(ComplexType* pInData, RealType* pOutDa
     }
 #elif (defined(__i386__) || defined(__x86_64__))
     asm volatile ("fsincos" : "=%&t" (Cos), "=%&u" (Sin) : "0" (m_RdsNcoPhase));  //126nS
+#elif defined(__arm__)
+    sincos_LP(m_RdsNcoPhase, Sin, Cos);
 #else
     Sin = MSIN(m_RdsNcoPhase);    //178ns for sin/cos calc
     Cos = MCOS(m_RdsNcoPhase);

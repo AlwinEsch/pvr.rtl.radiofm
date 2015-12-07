@@ -502,8 +502,9 @@ DemuxPacket* cRadioReceiver::Read(void)
         return NULL;
 
       uint8_t *data = (uint8_t *)pPacket->pData;
-      for (unsigned int i = 0; i < m_UECPOutputBuffer.size(); i++)
-        data[i] = m_UECPOutputBuffer[i];
+      unsigned int i = 0;
+      for (auto it = m_UECPOutputBuffer.cbegin(); it != m_UECPOutputBuffer.cend(); ++it, ++i)
+        data[i] = *it;
 
       pPacket->iStreamId  = iStreamId;
       pPacket->iSize      = iSize;
@@ -583,7 +584,7 @@ bool cRadioReceiver::GetSignalStatus(PVR_SIGNAL_STATUS &qualityinfo)
   float audioLevel = 20*log10(m_AudioLevel) + 3.01;
 
   std::string freq = StringUtils::Format("Freq.=%8.4fMHz - %s - IF=%+5.1fdB  BB=%+5.1fdB  Audio=%+5.1fdB",
-                                          m_FMDecoder->StereoDetected() ? "Stereo" : "Mono",
+                                          m_activeTunerFreq/1000000, m_FMDecoder->StereoDetected() ? "Stereo" : "Mono",
                                           (m_activeTunerFreq + m_FMDecoder->GetTuningOffset()) * 1.0e-6,
                                           interfaceLevel, 20*log10(m_FMDecoder->GetBasebandLevel()) + 3.01,
                                           audioLevel);
@@ -607,7 +608,7 @@ void cRadioReceiver::SamplesMeanRMS(const float* samples, double& mean, double& 
   float vsum = 0;
   float vsumsq = 0;
 
-  for (unsigned int i = 0; i < n; i++)
+  for (unsigned int i = 0; i < n; ++i)
   {
     float v = samples[i];
     vsum   += v;

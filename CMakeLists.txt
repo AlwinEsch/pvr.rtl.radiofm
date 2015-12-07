@@ -13,6 +13,7 @@ find_package(platform REQUIRED)
 
 if (NOT WIN32)
   add_definitions(-DUSE_DEMUX -fPIC -g -O2)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 include_directories(${kodiplatform_INCLUDE_DIRS}
