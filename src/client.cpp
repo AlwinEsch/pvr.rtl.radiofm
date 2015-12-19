@@ -364,6 +364,7 @@ PVR_ERROR MoveChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEME
 int GetChannelGroupsAmount() { return 0; }
 PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &group) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR GetTimerTypes(PVR_TIMER_TYPE types[], int *size) { return PVR_ERROR_NOT_IMPLEMENTED; }
 int GetTimersAmount(void) { return 0; }
 PVR_ERROR GetTimers(ADDON_HANDLE handle) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR AddTimer(const PVR_TIMER &timer) { return PVR_ERROR_NOT_IMPLEMENTED; }
@@ -384,6 +385,7 @@ long long LengthRecordedStream(void) { return 0; }
 bool CanPauseStream(void) { return false; }
 bool CanSeekStream(void) { return false; }
 bool SeekTime(int time, bool backwards, double *startpts) { return false; }
+bool IsTimeshifting(void) { return false; }
 time_t GetPlayingTime() { return 0; }
 time_t GetBufferTimeStart() { return 0; }
 time_t GetBufferTimeEnd() { return 0; }
