@@ -409,7 +409,7 @@ unsigned int cFmDecoder::ProcessStream(const ComplexType *samples_in, unsigned i
   PhaseLockedLoop(m_BufferDemod, m_BufferBaseband, dataSize);
 
   //! Handle RDS signal
-//  m_RDSProcess.Process(m_BufferBaseband, dataSize);
+  m_RDSProcess.Process(m_BufferBaseband, dataSize);
 
   //! Measure baseband level.
   RealType baseband_mean, baseband_rms;
