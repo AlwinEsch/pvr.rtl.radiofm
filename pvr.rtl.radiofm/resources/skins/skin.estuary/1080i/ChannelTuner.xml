@@ -1,0 +1,192 @@
+<window>
+  <defaultcontrol always="false">5</defaultcontrol>
+  <backgroundcolor>background</backgroundcolor>
+  <allowoverlay>no</allowoverlay>
+  <controls>
+    <include>DefaultBackground</include>
+    <control type="group">
+      <left>260</left>
+      <top>350</top>
+      <control type="group">
+        <include>OpenClose_Right</include>
+        <control type="image">
+          <description>Menu Panel</description>
+          <left>200</left>
+          <top>0</top>
+          <width>1000</width>
+          <height>340</height>
+          <texture border="22">dialogs/dialog-bg.png</texture>
+        </control>
+        <control type="image">
+          <description>Dialog Header image</description>
+          <left>220</left>
+          <top>20</top>
+          <width>960</width>
+          <height>70</height>
+          <texture colordiffuse="button_focus" border="2">colors/white70.png</texture>
+        </control>
+        <control type="label" id ="10">
+          <description>header label</description>
+          <left>255</left>
+          <top>40</top>
+          <width>740</width>
+          <height>30</height>
+          <font>font13_title</font>
+          <label>$ADDON[pvr.rtl.radiofm 30010]</label>
+          <align>left</align>
+          <aligny>center</aligny>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+        </control>
+        <control type="button" id ="5">
+          <description>OK</description>
+          <left>240</left>
+          <top>220</top>
+          <width>290</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30011]</label>
+          <align>center</align>
+          <onleft>6</onleft>
+          <onright>37</onright>
+          <onup>31</onup>
+          <ondown>31</ondown>
+        </control>
+        <control type="button" id ="37">
+          <description>Channel Name</description>
+          <left>400</left>
+          <top>220</top>
+          <width>600</width>
+          <height>100</height>
+          <label>-</label>
+          <texturefocus border="5">buttons/dialogbutton-nofo.png</texturefocus>
+          <texturenofocus border="5">buttons/dialogbutton-nofo.png</texturenofocus>
+          <align>center</align>
+          <onleft>5</onleft>
+          <onright>6</onright>
+          <onup>37</onup>
+          <ondown>37</ondown>
+        </control>
+        <control type="button" id ="6">
+          <description>Cancel</description>
+          <left>875</left>
+          <top>220</top>
+          <width>290</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30012]</label>
+          <align>center</align>
+          <onleft>37</onleft>
+          <onright>5</onright>
+          <onup>35</onup>
+          <ondown>35</ondown>
+        </control>
+        <control type="button" id ="30">
+          <description>Auto tune down</description>
+          <left>240</left>
+          <top>140</top>
+          <width>120</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30026]</label>
+          <align>center</align>
+          <onleft>36</onleft>
+          <onright>31</onright>
+          <onup>5</onup>
+          <ondown>5</ondown>
+        </control>
+        <control type="button" id ="31">
+          <description>Decrease 1MHz</description>
+          <left>325</left>
+          <top>140</top>
+          <width>120</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30024]</label>
+          <align>center</align>
+          <onleft>30</onleft>
+          <onright>32</onright>
+          <onup>5</onup>
+          <ondown>5</ondown>
+        </control>
+        <control type="button" id ="32">
+          <description>Decrease 0.1MHz</description>
+          <left>410</left>
+          <top>140</top>
+          <width>120</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30023]</label>
+          <align>center</align>
+          <onleft>31</onleft>
+          <onright>34</onright>
+          <onup>5</onup>
+          <ondown>5</ondown>
+        </control>
+        <control type="label" id ="33">
+          <description>Current freq</description>
+          <left>570</left>
+          <top>100</top>
+          <width>260</width>
+          <height>50</height>
+          <font>font35_title</font>
+          <label>-</label>
+          <align>center</align>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+        </control>
+        <control type="label" id ="38">
+          <description>Current Level</description>
+          <left>520</left>
+          <top>180</top>
+          <width>360</width>
+          <height>50</height>
+          <font>font16_title</font>
+          <label>-</label>
+          <align>center</align>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+        </control>
+        <control type="button" id ="34">
+          <description>Increase 0.1MHz</description>
+          <left>875</left>
+          <top>140</top>
+          <width>120</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30022]</label>
+          <align>center</align>
+          <onleft>32</onleft>
+          <onright>35</onright>
+          <onup>6</onup>
+          <ondown>6</ondown>
+        </control>
+        <control type="button" id ="35">
+          <description>Increase 1MHz</description>
+          <left>960</left>
+          <top>140</top>
+          <width>120</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30025]</label>
+          <align>center</align>
+          <onleft>34</onleft>
+          <onright>36</onright>
+          <onup>6</onup>
+          <ondown>6</ondown>
+        </control>
+        <control type="button" id ="36">
+          <description>Auto Tune up</description>
+          <left>1045</left>
+          <top>140</top>
+          <width>120</width>
+          <height>100</height>
+          <label>$ADDON[pvr.rtl.radiofm 30027]</label>
+          <align>center</align>
+          <onleft>35</onleft>
+          <onright>30</onright>
+          <onup>6</onup>
+          <ondown>6</ondown>
+        </control>
+      </control>
+    </control>
+    <include content="InfoDialogTopBarInfo">
+      <param name="breadcrumbs_label" value="$LOCALIZE[5] / $LOCALIZE[20077]" />
+      <param name="breadcrumbs_icon" value="icons/settings/skin.png" />
+    </include>
+    <include>BottomBar</include>
+  </controls>
+</window>
