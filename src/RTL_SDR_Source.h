@@ -32,7 +32,7 @@
 
 class cRadioReceiver;
 
-class cRtlSdrSource : public PLATFORM::CThread
+class cRtlSdrSource : public P8PLATFORM::CThread
 {
 public:
   //static const int default_block_length = 16 * 32 * 512;

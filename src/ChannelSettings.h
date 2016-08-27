@@ -27,7 +27,7 @@
 
 class cRadioReceiver;
 
-class cChannelSettings : public PLATFORM::CThread
+class cChannelSettings : public P8PLATFORM::CThread
 {
 public:
   cChannelSettings();

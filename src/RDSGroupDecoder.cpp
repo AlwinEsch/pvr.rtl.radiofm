@@ -20,7 +20,7 @@
  */
 
 #include  <string.h>
-#include "platform/util/StringUtils.h"
+#include "p8-platform/util/StringUtils.h"
 
 #include "client.h"
 #include "RadioReceiver.h"

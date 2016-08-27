@@ -7,9 +7,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_SOURCE_
 enable_language(CXX)
 
 find_package(TinyXML REQUIRED)
-find_package(kodi REQUIRED)
+find_package(Kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
-find_package(platform REQUIRED)
+find_package(p8-platform REQUIRED)
 
 if (NOT WIN32)
   add_definitions(-DUSE_DEMUX -fPIC -g -O2)
@@ -17,7 +17,7 @@ if (NOT WIN32)
 endif()
 
 include_directories(${kodiplatform_INCLUDE_DIRS}
-                    ${platform_INCLUDE_DIRS}
+                    ${p8-platform_INCLUDE_DIRS}
                     ${KODI_INCLUDE_DIR}
                     ${TINYXML_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/lib/rtl-sdr/include)
@@ -37,7 +37,7 @@ set(BASIC_SOURCES src/client.cpp
                   src/ChannelSettings.cpp)
 
 set(DEPLIBS ${kodiplatform_LIBRARIES}
-            ${platform_LIBRARIES}
+            ${p8-platform_LIBRARIES}
             ${TINYXML_LIBRARIES}
             rtlsdr_static)
 

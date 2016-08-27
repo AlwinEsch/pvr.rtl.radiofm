@@ -22,7 +22,7 @@
 
 #include <sstream>
 #include <limits.h>
-#include "platform/util/StringUtils.h"
+#include "p8-platform/util/StringUtils.h"
 
 #include "ChannelSettings.h"
 #include "RadioReceiver.h"

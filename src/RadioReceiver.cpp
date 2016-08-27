@@ -20,14 +20,14 @@
  *
  */
 
-#include "platform/util/StringUtils.h"
+#include "p8-platform/util/StringUtils.h"
 
 #include "RadioReceiver.h"
 #include "ChannelSettings.h"
 #include "FmDecode.h"
 
 using namespace ADDON;
-using namespace PLATFORM;
+using namespace P8PLATFORM;
 
 #define DVD_TIME_BASE 1000000
 #define DVD_NOPTS_VALUE    (-1LL<<52) // should be possible to represent in both double and int64_t
@@ -276,59 +276,50 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
                                bandwidth_pcm,                     // bandwidth_pcm
                                downsample);                       // downsample
 
-  std::vector<XbmcPvrStream> newStreams;
-
+  m_streams.iStreamCount = 0;
   CodecDescriptor codecId = CodecDescriptor::GetCodecByName("pcm_f32le");
   if (codecId.Codec().codec_type == XBMC_CODEC_TYPE_AUDIO)
   {
-    XbmcPvrStream newStream;
-    m_activeChannelStream.GetStreamData(1, &newStream);
+    m_streams.stream[0].iPID            = 1;
+    m_streams.stream[0].iCodecType      = codecId.Codec().codec_type;
+    m_streams.stream[0].iCodecId        = codecId.Codec().codec_id;
+    m_streams.stream[0].iChannels       = 2;
+    m_streams.stream[0].iSampleRate     = OUTPUT_SAMPLERATE;
+    m_streams.stream[0].iBitsPerSample  = 32;
+    m_streams.stream[0].iBitRate        = m_streams.stream[0].iSampleRate * m_streams.stream[0].iChannels * m_streams.stream[0].iBitsPerSample;
+    m_streams.stream[0].strLanguage[0]  = 0;
+    m_streams.stream[0].strLanguage[1]  = 0;
+    m_streams.stream[0].strLanguage[2]  = 0;
+    m_streams.stream[0].strLanguage[3]  = 0;
 
-    newStream.iCodecType      = codecId.Codec().codec_type;
-    newStream.iCodecId        = codecId.Codec().codec_id;
-    newStream.iChannels       = 2;
-    newStream.iSampleRate     = OUTPUT_SAMPLERATE;
-    newStream.iBitsPerSample  = 32;
-    newStream.iBitRate        = newStream.iSampleRate * newStream.iChannels * newStream.iBitsPerSample;
-    newStream.strLanguage[0]  = 0;
-    newStream.strLanguage[1]  = 0;
-    newStream.strLanguage[2]  = 0;
-    newStream.strLanguage[3]  = 0;
-    newStream.iIdentifier     = -1;
-
-    newStreams.push_back(newStream);
-    m_activeChannelStream.UpdateStreams(newStreams);
+    m_streams.iStreamCount++;
   }
   else
   {
-    m_activeChannelStream.Clear();
+    m_streams.iStreamCount = 0;
     return false;
   }
 
   codecId = CodecDescriptor::GetCodecByName("rds");
   if (codecId.Codec().codec_type == XBMC_CODEC_TYPE_RDS)
   {
-    XbmcPvrStream newStream;
-    m_activeChannelStream.GetStreamData(2, &newStream);
+    m_streams.stream[1].iPID            = 2;
+    m_streams.stream[1].iCodecType      = codecId.Codec().codec_type;
+    m_streams.stream[1].iCodecId        = codecId.Codec().codec_id;
+    m_streams.stream[1].iChannels       = 2;
+    m_streams.stream[1].iSampleRate     = OUTPUT_SAMPLERATE;
+    m_streams.stream[1].iBitsPerSample  = 32;
+    m_streams.stream[1].iBitRate        = m_streams.stream[1].iSampleRate * m_streams.stream[1].iChannels * m_streams.stream[1].iBitsPerSample;
+    m_streams.stream[1].strLanguage[0]  = 0;
+    m_streams.stream[1].strLanguage[1]  = 0;
+    m_streams.stream[1].strLanguage[2]  = 0;
+    m_streams.stream[1].strLanguage[3]  = 0;
 
-    newStream.iCodecType      = codecId.Codec().codec_type;
-    newStream.iCodecId        = codecId.Codec().codec_id;
-    newStream.iChannels       = 2;
-    newStream.iSampleRate     = OUTPUT_SAMPLERATE;
-    newStream.iBitsPerSample  = 32;
-    newStream.iBitRate        = newStream.iSampleRate * newStream.iChannels * newStream.iBitsPerSample;
-    newStream.strLanguage[0]  = 0;
-    newStream.strLanguage[1]  = 0;
-    newStream.strLanguage[2]  = 0;
-    newStream.strLanguage[3]  = 0;
-    newStream.iIdentifier     = -1;
-
-    newStreams.push_back(newStream);
-    m_activeChannelStream.UpdateStreams(newStreams);
+    m_streams.iStreamCount++;
   }
   else
   {
-    m_activeChannelStream.Clear();
+    m_streams.iStreamCount = 0;
     return false;
   }
 
@@ -343,7 +334,13 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
 
 bool cRadioReceiver::GetStreamProperties(PVR_STREAM_PROPERTIES* props)
 {
-  return m_activeChannelStream.GetProperties(props);
+ for (int i=0; i<m_streams.iStreamCount; i++)
+  {
+    memcpy(&props->stream[i], &m_streams.stream[i], sizeof(PVR_STREAM_PROPERTIES::PVR_STREAM));
+  }
+
+  props->iStreamCount = m_streams.iStreamCount;
+  return true;
 }
 
 void cRadioReceiver::CloseChannel()
@@ -360,7 +357,7 @@ void cRadioReceiver::CloseChannel()
 
     m_channelName.clear();
     m_AudioSourceBuffer.clear();
-    m_activeChannelStream.Clear();
+    m_streams.iStreamCount = 0;
   }
 }
 
@@ -387,7 +384,7 @@ bool cRadioReceiver::SwitchChannel(const PVR_CHANNEL &channel)
 
 void cRadioReceiver::Abort(void)
 {
-  m_activeChannelStream.Clear();
+  m_streams.iStreamCount = 0;
 }
 
 bool cRadioReceiver::AddUECPDataFrame(uint8_t *UECPDataFrame, unsigned int length)
@@ -489,13 +486,6 @@ DemuxPacket* cRadioReceiver::Read(void)
     CLockObject lock(m_UECPMutex);
     if (!m_UECPOutputBuffer.empty())
     {
-      int iStreamId = m_activeChannelStream.GetStreamId(2);
-      if (iStreamId == -1)
-      {
-        KODI->Log(LOG_DEBUG, "rds stream id not found");
-        return NULL;
-      }
-
       iSize   = m_UECPOutputBuffer.size();
       pPacket = PVR->AllocateDemuxPacket(iSize);
       if (!pPacket)
@@ -506,7 +496,7 @@ DemuxPacket* cRadioReceiver::Read(void)
       for (auto it = m_UECPOutputBuffer.cbegin(); it != m_UECPOutputBuffer.cend(); ++it, ++i)
         data[i] = *it;
 
-      pPacket->iStreamId  = iStreamId;
+      pPacket->iStreamId  = 2;
       pPacket->iSize      = iSize;
       pPacket->pts        = m_PTSNext;
 
@@ -519,13 +509,6 @@ DemuxPacket* cRadioReceiver::Read(void)
    * Handle, process and return radio sound
    */
   {
-    int iStreamId = m_activeChannelStream.GetStreamId(1);
-    if (iStreamId == -1)
-    {
-      KODI->Log(LOG_DEBUG, "radio audio stream id not found");
-      return NULL;
-    }
-
     //!> Check for overflow of source buffer.
     if (!m_AudioSourceBufferWarning && SourceQueuedSamples() > 10 * m_IfRate)
     {
@@ -549,7 +532,7 @@ DemuxPacket* cRadioReceiver::Read(void)
 
     double duration = (double)(iSize) * DVD_TIME_BASE / 2 / OUTPUT_SAMPLERATE;
 
-    pPacket->iStreamId  = m_activeChannelStream.GetStreamId(1);
+    pPacket->iStreamId  = 1;
     pPacket->iSize      = iSize*sizeof(float);
     pPacket->duration   = duration;
     pPacket->pts        = m_PTSNext;
@@ -596,9 +579,6 @@ bool cRadioReceiver::GetSignalStatus(PVR_SIGNAL_STATUS &qualityinfo)
 
   qualityinfo.iSignal       = 2.5*(interfaceLevel+40)*656;
   qualityinfo.iSNR          = (audioLevel+100)*656;
-  qualityinfo.dVideoBitrate = 0;
-  qualityinfo.dAudioBitrate = m_IfRate;
-  qualityinfo.dDolbyBitrate = 0;
 
   return true;
 }

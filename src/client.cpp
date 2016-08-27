@@ -22,7 +22,7 @@
 
 #include "client.h"
 #include "kodi/xbmc_pvr_dll.h"
-#include "platform/util/util.h"
+#include "p8-platform/util/util.h"
 
 #include "RadioReceiver.h"
 #include "ChannelSettings.h"
@@ -404,4 +404,10 @@ PVR_ERROR SetRecordingLastPlayedPosition(const PVR_RECORDING &recording, int las
 int GetRecordingLastPlayedPosition(const PVR_RECORDING &recording) { return -1; }
 PVR_ERROR GetRecordingEdl(const PVR_RECORDING& recinfo, PVR_EDL_ENTRY edl[], int *size) { return PVR_ERROR_NOT_IMPLEMENTED; }
 unsigned int GetChannelSwitchDelay(void) { return 0; }
+bool IsRealTimeStream(void) { return false; }
+PVR_ERROR SetEPGTimeFrame(int) { return PVR_ERROR_NOT_IMPLEMENTED; }
+void OnSystemSleep(void) { }
+void OnSystemWake(void) { }
+void OnPowerSavingActivated(void) { }
+void OnPowerSavingDeactivated(void) { }
 }

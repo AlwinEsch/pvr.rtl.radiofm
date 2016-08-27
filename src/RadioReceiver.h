@@ -95,7 +95,7 @@ private:
   std::string                         m_channelName;
   int                                 m_DeviceIndex;
   std::vector<FMRadioChannel>         m_channels;
-  ADDON::XbmcStreamProperties         m_activeChannelStream;
+  PVR_STREAM_PROPERTIES               m_streams;
   PVR_CHANNEL                         m_activeChannelInfo;
   int                                 m_activeIndex;
   double                              m_activeChannelFrequency;
@@ -126,16 +126,16 @@ private:
   cRtlSdrSource                       m_RtlSdrReceiver;
   cFmDecoder                         *m_FMDecoder;
 
-  PLATFORM::CMutex                    m_UECPMutex;
+  P8PLATFORM::CMutex                  m_UECPMutex;
   std::vector<uint8_t>                m_UECPOutputBuffer;
 
-  PLATFORM::CMutex                    m_AudioSignalMutex;
+  P8PLATFORM::CMutex                  m_AudioSignalMutex;
   double                              m_PTSNext;
 
   size_t                              m_AudioSourceSize;
   std::deque<std::vector<ComplexType> >  m_AudioSourceBuffer;
-  PLATFORM::CMutex                    m_AudioSourceMutex;
-  PLATFORM::CEvent                    m_AudioSourceEvent;
+  P8PLATFORM::CMutex                  m_AudioSourceMutex;
+  P8PLATFORM::CEvent                  m_AudioSourceEvent;
   bool                                m_AudioSourceEndMarked;
   bool                                m_AudioSourceBufferWarning;
 
