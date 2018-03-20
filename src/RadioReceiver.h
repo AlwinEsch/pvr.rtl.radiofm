@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2015 Alwin Esch (Team KODI)
+ *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -80,7 +80,7 @@ public:
   bool SetChannelName(std::string name);
   bool IsActive() { return m_StreamActive; }
   bool IsChannelActive(int index) { return m_StreamActive ? m_activeIndex == index : false; }
-  bool IsSettingActive() { return m_SettingsDialog != NULL; }
+  bool IsSettingActive() { return m_SettingsDialog != nullptr; }
 
   void RegisterDialog(cChannelSettings *dialog);
   void SetStreamChange() { m_StreamChange = true; }

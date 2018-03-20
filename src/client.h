@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2015 Alwin Esch (Team KODI)
+ *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -22,12 +22,9 @@
  */
 
 #include "kodi/libXBMC_addon.h"
-#include "kodi/libXBMC_codec.h"
 #include "kodi/libXBMC_pvr.h"
 #include "kodi/libKODI_guilib.h"
-#include "kodi/DVDDemuxPacket.h"
 #include "kodi/util/XMLUtils.h"
-//#include "p8-platform/util/StdString.h"
 #include "p8-platform/util/util.h"
 #include "p8-platform/util/timeutils.h"
 #include "p8-platform/threads/threads.h"
@@ -36,10 +33,7 @@ extern bool                          m_bCreated;
 extern std::string                   g_strUserPath;
 extern std::string                   g_strClientPath;
 extern ADDON::CHelper_libXBMC_addon *KODI;
-extern CHelper_libXBMC_codec        *CODEC;
 extern CHelper_libKODI_guilib       *GUI;
 extern CHelper_libXBMC_pvr          *PVR;
 
 #define XBMC KODI
-
-//#include "kodi/xbmc_stream_utils.hpp"

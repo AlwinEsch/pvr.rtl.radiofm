@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2015 Alwin Esch (Team KODI)
+ *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -49,9 +49,9 @@ cRadioReceiver::cRadioReceiver()
   m_LnaGain         = INT_MIN;
   m_AgcMode         = false;
   m_StreamChange    = false;
-  m_FMDecoder       = NULL;
+  m_FMDecoder       = nullptr;
   m_StreamActive    = false;
-  m_SettingsDialog  = NULL;
+  m_SettingsDialog  = nullptr;
 
   LoadChannelData(true);
 }
@@ -354,7 +354,7 @@ void cRadioReceiver::CloseChannel()
   if (m_FMDecoder)
   {
     delete m_FMDecoder;
-    m_FMDecoder = NULL;
+    m_FMDecoder = nullptr;
 
     m_channelName.clear();
     m_AudioSourceBuffer.clear();
@@ -466,7 +466,7 @@ bool cRadioReceiver::SourceGetSamples(std::vector<ComplexType> &samples)
 DemuxPacket* cRadioReceiver::Read(void)
 {
   unsigned int iSize   = 0;
-  DemuxPacket* pPacket = NULL;
+  DemuxPacket* pPacket = nullptr;
 
   /*!
    * Handle stream change
@@ -489,7 +489,7 @@ DemuxPacket* cRadioReceiver::Read(void)
       iSize   = m_UECPOutputBuffer.size();
       pPacket = PVR->AllocateDemuxPacket(iSize);
       if (!pPacket)
-        return NULL;
+        return nullptr;
 
       uint8_t *data = (uint8_t *)pPacket->pData;
       unsigned int i = 0;
@@ -518,11 +518,11 @@ DemuxPacket* cRadioReceiver::Read(void)
 
     std::vector<ComplexType> iqsamples;
     if (!SourceGetSamples(iqsamples))                       //!< Pull next block from source buffer.
-      return NULL;
+      return nullptr;
 
     pPacket = PVR->AllocateDemuxPacket(iqsamples.size()*sizeof(float)*2);
     if (!pPacket)
-      return NULL;
+      return nullptr;
 
     iSize = m_FMDecoder->ProcessStream(iqsamples.data(), iqsamples.size(), (float *)pPacket->pData);           //!< Decode FM signal.
 
@@ -665,8 +665,8 @@ bool cRadioReceiver::LoadChannelData(bool initial)
   TiXmlElement *pElement = pRootElement->FirstChildElement("devices");
   if (pElement)
   {
-    TiXmlNode *pGroupNode = NULL;
-    while ((pGroupNode = pElement->IterateChildren(pGroupNode)) != NULL)
+    TiXmlNode *pGroupNode = nullptr;
+    while ((pGroupNode = pElement->IterateChildren(pGroupNode)) != nullptr)
     {
       if (!XMLUtils::GetInt(pGroupNode, "index", m_DeviceIndex))
         m_DeviceIndex = 0;
@@ -687,8 +687,8 @@ bool cRadioReceiver::LoadChannelData(bool initial)
   pElement = pRootElement->FirstChildElement("channels");
   if (pElement)
   {
-    TiXmlNode *pChannelNode = NULL;
-    while ((pChannelNode = pElement->IterateChildren(pChannelNode)) != NULL)
+    TiXmlNode *pChannelNode = nullptr;
+    while ((pChannelNode = pElement->IterateChildren(pChannelNode)) != nullptr)
     {
       std::string strTmp;
       FMRadioChannel channel;
@@ -730,7 +730,7 @@ bool cRadioReceiver::SaveChannelData(void)
   TiXmlDocument xmlDoc;
   TiXmlElement xmlRootElement("radio");
   TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
-  if (pRoot == NULL)
+  if (pRoot == nullptr)
     return false;
 
   TiXmlElement xmlDeviceSetting("devices");

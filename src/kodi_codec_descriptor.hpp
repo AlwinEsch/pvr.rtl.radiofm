@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2015 Team KODI
+ *      Copyright (C) 2005-2018 Team KODI
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 #ifndef KODI_CODEC_DESCRIPTOR_HPP
 #define KODI_CODEC_DESCRIPTOR_HPP
 
-#include "kodi/libXBMC_codec.h"
+#include "kodi/libXBMC_pvr.h"
 #include <stdio.h>
 
 /**
@@ -50,13 +50,13 @@ public:
     CodecDescriptor retVal;
     // some of Tvheadend's and VDR's codec names don't match ffmpeg's, so translate them to something ffmpeg understands
     if (!strcmp(strCodecName, "MPEG2AUDIO"))
-      retVal = CodecDescriptor(CODEC->GetCodecByName("MP2"), strCodecName);
+      retVal = CodecDescriptor(PVR->GetCodecByName("MP2"), strCodecName);
     else if (!strcmp(strCodecName, "MPEGTS"))
-      retVal = CodecDescriptor(CODEC->GetCodecByName("MPEG2VIDEO"), strCodecName);
+      retVal = CodecDescriptor(PVR->GetCodecByName("MPEG2VIDEO"), strCodecName);
     else if (!strcmp(strCodecName, "TEXTSUB"))
-      retVal = CodecDescriptor(CODEC->GetCodecByName("TEXT"), strCodecName);
+      retVal = CodecDescriptor(PVR->GetCodecByName("TEXT"), strCodecName);
     else
-      retVal = CodecDescriptor(CODEC->GetCodecByName(strCodecName), strCodecName);
+      retVal = CodecDescriptor(PVR->GetCodecByName(strCodecName), strCodecName);
     return retVal;
   }
 

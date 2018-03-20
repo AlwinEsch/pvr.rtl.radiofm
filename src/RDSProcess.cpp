@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2010-2013, Moe Wheatley
- *      Copyright (C) 2015 Team KODI (Alwin Esch)
+ *      Copyright (C) 2015-2018 Team KODI (Alwin Esch)
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify

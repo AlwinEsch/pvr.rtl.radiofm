@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2015 Alwin Esch (Team KODI)
+ *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@
 using namespace ADDON;
 
 cChannelSettings::cChannelSettings()
- : m_window(NULL)
+ : m_window(nullptr)
 {
 }
 
@@ -95,7 +95,7 @@ PVR_ERROR cChannelSettings::Open(const PVR_CHANNEL &channel, cRadioReceiver *sou
     m_PrevFreq = m_CurrentFreq;
 
   /* Load the Window as Dialog */
-  m_window = GUI->Window_create("ChannelTuner.xml", "Confluence", false, true);
+  m_window = GUI->Window_create("ChannelTuner.xml", "skin.estuary", false, true);
   m_window->m_cbhdl   = this;
   m_window->CBOnInit  = OnInitCB;
   m_window->CBOnFocus = OnFocusCB;
@@ -104,7 +104,7 @@ PVR_ERROR cChannelSettings::Open(const PVR_CHANNEL &channel, cRadioReceiver *sou
   m_window->DoModal();
 
   StopThread();
-  m_Source->RegisterDialog(NULL);
+  m_Source->RegisterDialog(nullptr);
 
   GUI->Window_destroy(m_window);
 
@@ -160,7 +160,7 @@ void *cChannelSettings::Process()
     }
     m_AutoTuneIgnore = false;
   }
-  return NULL;
+  return nullptr;
 }
 
 bool cChannelSettings::OnClick(int controlId)

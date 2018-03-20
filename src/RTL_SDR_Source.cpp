@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013, Joris van Rantwijk.
- *      Copyright (C) 2015 Alwin Esch (Team KODI)
+ *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 using namespace ADDON;
 
 cRtlSdrSource::cRtlSdrSource(cRadioReceiver *proc)
-  : m_DevicePtr(NULL)
+  : m_DevicePtr(nullptr)
   , m_Proc(proc)
   , m_BlockLength(default_block_length)
 {
@@ -42,17 +42,17 @@ cRtlSdrSource::~cRtlSdrSource()
   Close();
   if (m_DevicePtr)
     rtlsdr_close(m_DevicePtr);
-  m_DevicePtr = NULL;
+  m_DevicePtr = nullptr;
 }
 
 bool cRtlSdrSource::OpenDevice(int dev_index)
 {
   if (m_DevicePtr)
     rtlsdr_close(m_DevicePtr);
-  m_DevicePtr = NULL;
+  m_DevicePtr = nullptr;
 
   const char *devname = rtlsdr_get_device_name(dev_index);
-  if (devname != NULL)
+  if (devname != nullptr)
     m_DeviceName = devname;
 
   int ret = rtlsdr_open(&m_DevicePtr, dev_index);
@@ -187,7 +187,7 @@ int cRtlSdrSource::GetTunerGain()
 
 bool cRtlSdrSource::GetTunerGains(std::vector<int> &gains)
 {
-  int num_gains = rtlsdr_get_tuner_gains(m_DevicePtr, NULL);
+  int num_gains = rtlsdr_get_tuner_gains(m_DevicePtr, nullptr);
   if (num_gains <= 0)
     return false;
 
@@ -259,5 +259,5 @@ void *cRtlSdrSource::Process(void)
   }
 
   m_Proc->EndDataBuffer();
-  return NULL;
+  return nullptr;
 }

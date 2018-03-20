@@ -40,16 +40,15 @@ using namespace ADDON;
  */
 bool                m_bCreated       = false;
 ADDON_STATUS        m_CurStatus      = ADDON_STATUS_UNKNOWN;
-cRadioReceiver     *m_dataProc       = NULL;
+cRadioReceiver     *m_dataProc       = nullptr;
 bool                m_bIsPlaying     = false;
 
 std::string         g_strUserPath    = "";
 std::string         g_strClientPath  = "";
 
-CHelper_libXBMC_addon        *KODI   = NULL;
-CHelper_libXBMC_codec        *CODEC  = NULL;
-CHelper_libKODI_guilib       *GUI    = NULL;
-CHelper_libXBMC_pvr          *PVR    = NULL;
+CHelper_libXBMC_addon        *KODI   = nullptr;
+CHelper_libKODI_guilib       *GUI    = nullptr;
+CHelper_libXBMC_pvr          *PVR    = nullptr;
 
 extern "C" {
 
@@ -79,20 +78,10 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
     return ADDON_STATUS_PERMANENT_FAILURE;
   }
 
-  CODEC = new CHelper_libXBMC_codec;
-  if (!CODEC->RegisterMe(hdl))
-  {
-    SAFE_DELETE(CODEC);
-    SAFE_DELETE(GUI);
-    SAFE_DELETE(KODI);
-    return ADDON_STATUS_PERMANENT_FAILURE;
-  }
-
   PVR = new CHelper_libXBMC_pvr;
   if (!PVR->RegisterMe(hdl))
   {
     SAFE_DELETE(PVR);
-    SAFE_DELETE(CODEC);
     SAFE_DELETE(GUI);
     SAFE_DELETE(KODI);
     return ADDON_STATUS_PERMANENT_FAILURE;
@@ -118,8 +107,6 @@ ADDON_STATUS ADDON_GetStatus()
 
 void ADDON_Destroy()
 {
-  SAFE_DELETE(CODEC);
-
   if (m_dataProc)
     SAFE_DELETE(m_dataProc);
 
@@ -136,21 +123,6 @@ void ADDON_Destroy()
   m_CurStatus = ADDON_STATUS_UNKNOWN;
 }
 
-bool ADDON_HasSettings()
-{
-  return true;
-}
-
-unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
-{
-  return 0;
-}
-
-ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
-{
-  return ADDON_STATUS_OK;
-}
-
 void ADDON_Stop()
 {
 }
@@ -160,37 +132,9 @@ void ADDON_FreeSettings()
 
 }
 
-void ADDON_Announce(const char *flag, const char *sender, const char *message, const void *data)
-{
-}
-
 /***********************************************************
  * PVR Client AddOn specific public library functions
  ***********************************************************/
-
-const char* GetPVRAPIVersion(void)
-{
-  static const char *strApiVersion = XBMC_PVR_API_VERSION;
-  return strApiVersion;
-}
-
-const char* GetMininumPVRAPIVersion(void)
-{
-  static const char *strMinApiVersion = XBMC_PVR_MIN_API_VERSION;
-  return strMinApiVersion;
-}
-
-const char* GetGUIAPIVersion(void)
-{
-  static const char *strGuiApiVersion = KODI_GUILIB_API_VERSION;
-  return strGuiApiVersion;
-}
-
-const char* GetMininumGUIAPIVersion(void)
-{
-  static const char *strMinGuiApiVersion = KODI_GUILIB_MIN_API_VERSION;
-  return strMinGuiApiVersion;
-}
 
 PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities)
 {
@@ -320,7 +264,7 @@ void DemuxAbort(void)
 DemuxPacket* DemuxRead(void)
 {
   if (!m_dataProc)
-    return NULL;
+    return nullptr;
 
   return m_dataProc->Read();
 }
@@ -349,9 +293,17 @@ PVR_ERROR CallMenuHook(const PVR_MENUHOOK &menuhook, const PVR_MENUHOOK_DATA &it
   return PVR_ERROR_NO_ERROR;
 }
 
+ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
+{
+  return ADDON_STATUS_NOT_IMPLEMENTED;
+}
+
 /** UNUSED API FUNCTIONS */
 PVR_ERROR GetDriveSpace(long long *iTotal, long long *iUsed) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel, time_t iStart, time_t iEnd) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR IsEPGTagRecordable(const EPG_TAG*, bool*) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR IsEPGTagPlayable(const EPG_TAG*, bool*) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR GetEPGTagStreamProperties(const EPG_TAG*, PVR_NAMED_VALUE*, unsigned int*) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR MoveChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
 int GetChannelGroupsAmount() { return 0; }
 PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio) { return PVR_ERROR_NOT_IMPLEMENTED; }
@@ -391,6 +343,7 @@ long long SeekLiveStream(long long iPosition, int iWhence /* = SEEK_SET */) { re
 long long PositionLiveStream(void) { return -1; }
 long long LengthLiveStream(void) { return -1; }
 const char * GetLiveStreamURL(const PVR_CHANNEL &channel) { return ""; }
+PVR_ERROR SetRecordingLifetime(const PVR_RECORDING*) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR SetRecordingPlayCount(const PVR_RECORDING &recording, int count) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR SetRecordingLastPlayedPosition(const PVR_RECORDING &recording, int lastplayedposition) { return PVR_ERROR_NOT_IMPLEMENTED; }
 int GetRecordingLastPlayedPosition(const PVR_RECORDING &recording) { return -1; }
@@ -402,5 +355,9 @@ void OnSystemSleep(void) { }
 void OnSystemWake(void) { }
 void OnPowerSavingActivated(void) { }
 void OnPowerSavingDeactivated(void) { }
+PVR_ERROR GetStreamTimes(PVR_STREAM_TIMES*) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR GetDescrambleInfo(PVR_DESCRAMBLE_INFO*) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR GetChannelStreamProperties(const PVR_CHANNEL*, PVR_NAMED_VALUE*, unsigned int*) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING*, PVR_NAMED_VALUE*, unsigned int*) { return PVR_ERROR_NOT_IMPLEMENTED; }
 
 }
