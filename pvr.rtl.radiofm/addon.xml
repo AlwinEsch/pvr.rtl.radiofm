@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="pvr.rtl.radiofm"
-  version="0.0.9"
+  version="0.0.10"
   name="RTL-SDR FM Radio Client"
   provider-name="Alwin Esch, Team XBMC">
   <requires>
