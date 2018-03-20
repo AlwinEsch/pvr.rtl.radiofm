@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2015 Alwin Esch (Team KODI)
+ *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -325,14 +325,6 @@ DemuxPacket* DemuxRead(void)
   return m_dataProc->Read();
 }
 
-int GetCurrentClientChannel(void)
-{
-  if (m_dataProc)
-    return m_dataProc->CurrentChannel();
-
-  return -1;
-}
-
 bool SwitchChannel(const PVR_CHANNEL &channel)
 {
   if (m_dataProc)
@@ -384,7 +376,7 @@ long long PositionRecordedStream(void) { return 0; }
 long long LengthRecordedStream(void) { return 0; }
 bool CanPauseStream(void) { return false; }
 bool CanSeekStream(void) { return false; }
-bool SeekTime(int time, bool backwards, double *startpts) { return false; }
+bool SeekTime(double time, bool backwards, double *startpts) { return false; }
 bool IsTimeshifting(void) { return false; }
 time_t GetPlayingTime() { return 0; }
 time_t GetBufferTimeStart() { return 0; }
@@ -410,4 +402,5 @@ void OnSystemSleep(void) { }
 void OnSystemWake(void) { }
 void OnPowerSavingActivated(void) { }
 void OnPowerSavingDeactivated(void) { }
+
 }

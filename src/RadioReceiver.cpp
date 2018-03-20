@@ -32,7 +32,6 @@ using namespace ADDON;
 using namespace P8PLATFORM;
 
 #define DVD_TIME_BASE 1000000
-#define DVD_NOPTS_VALUE    (-1LL<<52) // should be possible to represent in both double and int64_t
 
 #define DVD_TIME_TO_SEC(x)  ((int)((double)(x) / DVD_TIME_BASE))
 #define DVD_TIME_TO_MSEC(x) ((int)((double)(x) * 1000 / DVD_TIME_BASE))
@@ -282,7 +281,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   CodecDescriptor codecId = CodecDescriptor::GetCodecByName("pcm_f32le");
   if (codecId.Codec().codec_type == XBMC_CODEC_TYPE_AUDIO)
   {
-    m_streams.stream[0].iPhysicalId     = 1;
+    m_streams.stream[0].iPID            = 1;
     m_streams.stream[0].iCodecType      = codecId.Codec().codec_type;
     m_streams.stream[0].iCodecId        = codecId.Codec().codec_id;
     m_streams.stream[0].iChannels       = 2;
@@ -305,7 +304,7 @@ bool cRadioReceiver::OpenChannel(const PVR_CHANNEL &channel)
   codecId = CodecDescriptor::GetCodecByName("rds");
   if (codecId.Codec().codec_type == XBMC_CODEC_TYPE_RDS)
   {
-    m_streams.stream[1].iPhysicalId     = 2;
+    m_streams.stream[1].iPID            = 2;
     m_streams.stream[1].iCodecType      = codecId.Codec().codec_type;
     m_streams.stream[1].iCodecId        = codecId.Codec().codec_id;
     m_streams.stream[1].iChannels       = 2;
