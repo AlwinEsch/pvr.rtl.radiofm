@@ -1,44 +1,30 @@
-#pragma once
 /*
- *      Copyright (C) 2013, Joris van Rantwijk.
- *      Copyright (C) 2015-2018, Alwin Esch (Team KODI)
- *      http://kodi.tv
+ *  Copyright (C) 2013, Joris van Rantwijk.
+ *  Copyright (C) 2015-2020, Alwin Esch (Team KODI)
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with KODI; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301  USA
- *  http://www.gnu.org/copyleft/gpl.html
- *
- *  Based upon: SoftFM - Software decoder for FM broadcast radio with RTL-SDR
- *  and modfied for better performance
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSE.md for more information.
  */
 
+#pragma once
+
+#include "Definitions.h"
+
+#include <atomic>
 #include <stdint.h>
 #include <string>
+#include <thread>
 #include <vector>
-
-#include "Definations.h"
 
 class cRadioReceiver;
 
-class cRtlSdrSource : public P8PLATFORM::CThread
+class ATTRIBUTE_HIDDEN cRtlSdrSource
 {
 public:
   //static const int default_block_length = 16 * 32 * 512;
   static const int default_block_length = 65536;
 
-  cRtlSdrSource(cRadioReceiver *proc);
+  cRtlSdrSource(cRadioReceiver* proc);
   virtual ~cRtlSdrSource();
 
   /*!>
@@ -66,8 +52,8 @@ public:
   bool Configure(uint32_t sample_rate,
                  uint32_t frequency,
                  int tuner_gain,
-                 int block_length=default_block_length,
-                 bool agcmode=false);
+                 int block_length = default_block_length,
+                 bool agcmode = false);
 
   /*!> Return current sample frequency in Hz. */
   uint32_t GetSampleRate();
@@ -81,13 +67,10 @@ public:
   int GetTunerGain();
 
   /*!> Return a list of supported tuner gain settings in units of 0.1 dB. */
-  bool GetTunerGains(std::vector<int> &gains);
+  std::vector<int> GetTunerGains();
 
   /*!> Return name of opened RTL-SDR device. */
-  std::string GetDeviceName() const
-  {
-    return m_DeviceName;
-  }
+  std::string GetDeviceName() const { return m_DeviceName; }
 
   /*!> Return the last error, or return an empty string if there is no error. */
   std::string error()
@@ -98,31 +81,31 @@ public:
   }
 
   /*!> Return true if the device is OK, return false if there is an error. */
-  operator bool() const
-  {
-    return m_DevicePtr && m_error.empty();
-  }
+  operator bool() const { return m_DevicePtr && m_error.empty(); }
 
   /*!> Return a list of supported devices. */
-  static bool GetDeviceNames(std::vector<std::string> &result);
+  static bool GetDeviceNames(std::vector<std::string>& result);
 
 protected:
-  virtual void *Process(void);
+  void Process();
 
 private:
-  static void ReadAsyncCB(unsigned char *buf, uint32_t len, void *ctx);
+  static void ReadAsyncCB(unsigned char* buf, uint32_t len, void* ctx);
 
-  struct rtlsdr_dev * m_DevicePtr;
-  cRadioReceiver     *m_Proc;
-  unsigned int        m_BlockLength;
-  int                 m_DeviceIndex;
-  uint32_t            m_SampleRate;
-  uint32_t            m_Frequency;
-  int                 m_TunerGain;
-  bool                m_agcMode;
+  std::atomic<bool> m_running = {false};
+  std::thread m_thread;
+
+  struct rtlsdr_dev* m_DevicePtr;
+  cRadioReceiver* m_Proc;
+  unsigned int m_BlockLength;
+  int m_DeviceIndex;
+  uint32_t m_SampleRate;
+  uint32_t m_Frequency;
+  int m_TunerGain;
+  bool m_agcMode;
   std::vector<ComplexType> m_Samples;
-  bool                m_Cancelled;
+  bool m_Cancelled;
 
-  std::string         m_DeviceName;
-  std::string         m_error;
+  std::string m_DeviceName;
+  std::string m_error;
 };

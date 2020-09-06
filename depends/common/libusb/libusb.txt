@@ -1,0 +1,1 @@
+libusb https://github.com/libusb/libusb v1.0.20

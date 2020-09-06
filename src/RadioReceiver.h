@@ -1,143 +1,140 @@
-#pragma once
 /*
- *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
- *      http://kodi.tv
+ *  Copyright (C) 2015-2020, Alwin Esch (Team KODI)
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with KODI; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301  USA
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSE.md for more information.
  */
 
-#include "client.h"
-#include <stdint.h>
-#include <vector>
-#include <deque>
-#include <string>
+#pragma once
 
-#include "kodi_codec_descriptor.hpp"
-#include "Definations.h"
+#include "Definitions.h"
 #include "DownConvert.h"
 #include "RTL_SDR_Source.h"
+
+#include <condition_variable>
+#include <deque>
+#include <kodi/addon-instance/PVR.h>
+#include <limits.h>
+#include <mutex>
+#include <stdint.h>
+#include <string>
+#include <vector>
 
 class cFmDecoder;
 class cChannelSettings;
 
 struct FMRadioChannel
 {
-  unsigned int  iUniqueId;
-  float         fChannelFreq;
-  std::string   strChannelName;
-  std::string   strIconPath;
+  unsigned int iUniqueId;
+  float fChannelFreq;
+  std::string strChannelName;
+  std::string strIconPath;
 };
 
-class cRadioReceiver
+class ATTRIBUTE_HIDDEN cRadioReceiver : public kodi::addon::CAddonBase,
+                                        public kodi::addon::CInstancePVRClient
 {
 public:
   cRadioReceiver();
   virtual ~cRadioReceiver();
 
+  PVR_ERROR GetCapabilities(kodi::addon::PVRCapabilities& capabilities) override;
+  PVR_ERROR GetBackendName(std::string& name) override;
+  PVR_ERROR GetBackendVersion(std::string& version) override;
+  PVR_ERROR GetConnectionString(std::string& connection) override;
+
   /*!
    * From Kodi used functions
    */
-  int GetChannelsAmount(void);
-  PVR_ERROR GetChannels(ADDON_HANDLE handle);
-  PVR_ERROR DeleteChannel(const PVR_CHANNEL &channel);
+  PVR_ERROR GetChannelsAmount(int& amount) override;
+  PVR_ERROR GetChannels(bool radio, kodi::addon::PVRChannelsResultSet& results) override;
+  PVR_ERROR DeleteChannel(const kodi::addon::PVRChannel& channel) override;
+  PVR_ERROR RenameChannel(const kodi::addon::PVRChannel& channel) override;
+  PVR_ERROR OpenDialogChannelSettings(const kodi::addon::PVRChannel& channel) override;
+  PVR_ERROR OpenDialogChannelAdd(const kodi::addon::PVRChannel& channel) override;
+  PVR_ERROR GetSignalStatus(int channelUid, kodi::addon::PVRSignalStatus& signalStatus) override;
 
-  bool OpenChannel(const PVR_CHANNEL &channel);
-  bool GetStreamProperties(PVR_STREAM_PROPERTIES* props);
-  void CloseChannel();
-  bool SwitchChannel(const PVR_CHANNEL &channel);
-  int CurrentChannel() { return m_activeChannelInfo.iChannelNumber; }
-  DemuxPacket* Read(void);
-  void Abort(void);
+  bool OpenLiveStream(const kodi::addon::PVRChannel& channel) override;
+  void CloseLiveStream() override;
+  PVR_ERROR GetStreamProperties(std::vector<kodi::addon::PVRStreamProperties>& properties) override;
+  DemuxPacket* DemuxRead() override;
+  void DemuxAbort() override;
 
-  bool GetSignalStatus(float &interfaceLevel, float &audioLevel, bool &stereo);
-  bool GetSignalStatus(PVR_SIGNAL_STATUS &signalStatus);
+  int CurrentChannel() { return m_activeChannelInfo.GetChannelNumber(); }
+
+  bool GetSignalStatus(float& interfaceLevel, float& audioLevel, bool& stereo);
 
   /*!
    * Intern of addon used functions
    */
   bool LoadChannelData(bool initial);
   bool SaveChannelData(void);
-  bool SetChannel(const PVR_CHANNEL &channel);
+  bool SetChannel(const kodi::addon::PVRChannel& channel);
   unsigned int CreateNewUniqueId() { return m_UniqueIdNextNew++; }
-  std::string CreateChannelName(FMRadioChannel &channel) const;
-  std::vector<FMRadioChannel> *GetChannelData() { return &m_channels; }
-  cRtlSdrSource *GetSource() { return &m_RtlSdrReceiver; }
+  std::string CreateChannelName(FMRadioChannel& channel) const;
+  std::vector<FMRadioChannel>* GetChannelData() { return &m_channels; }
+  cRtlSdrSource* GetSource() { return &m_RtlSdrReceiver; }
   bool SetChannelName(std::string name);
   bool IsActive() { return m_StreamActive; }
   bool IsChannelActive(int index) { return m_StreamActive ? m_activeIndex == index : false; }
   bool IsSettingActive() { return m_SettingsDialog != nullptr; }
 
-  void RegisterDialog(cChannelSettings *dialog);
+  void RegisterDialog(cChannelSettings* dialog);
   void SetStreamChange() { m_StreamChange = true; }
 
 private:
   std::string GetSettingsFile() const;
 
-  inline void AdjustGain(float *samples, float gain, unsigned int n);
+  inline void AdjustGain(float* samples, float gain, unsigned int n);
   inline void SamplesMeanRMS(const float* samples, double& mean, double& rms, unsigned int n);
 
-  std::string                         m_strDefaultIcon;
-  std::string                         m_channelName;
-  int                                 m_DeviceIndex;
-  std::vector<FMRadioChannel>         m_channels;
-  PVR_STREAM_PROPERTIES               m_streams;
-  PVR_CHANNEL                         m_activeChannelInfo;
-  int                                 m_activeIndex;
-  double                              m_activeChannelFrequency;
-  double                              m_IfRate;
-  double                              m_PCMRate;
-  int                                 m_LnaGain;
-  bool                                m_AgcMode;
-  bool                                m_StreamChange;
-  bool                                m_StreamActive;
-  float                               m_AudioLevel;
-  double                              m_activeTunerFreq;
-  PVR_SIGNAL_STATUS                   m_activeSignalStatus;
+  std::string m_strDefaultIcon;
+  std::string m_channelName;
+  int m_DeviceIndex = -1;
+  std::vector<FMRadioChannel> m_channels;
+  std::vector<kodi::addon::PVRStreamProperties> m_streams;
+  kodi::addon::PVRChannel m_activeChannelInfo;
+  int m_activeIndex = -1;
+  double m_activeChannelFrequency;
+  double m_IfRate = 1.0e6;
+  double m_PCMRate = OUTPUT_SAMPLERATE;
+  int m_LnaGain = INT_MIN;
+  bool m_AgcMode = false;
+  bool m_StreamChange = false;
+  bool m_StreamActive = false;
+  float m_AudioLevel = 0.0f;
+  double m_activeTunerFreq;
+  kodi::addon::PVRSignalStatus m_activeSignalStatus;
 
-  cChannelSettings                   *m_SettingsDialog;
+  cChannelSettings* m_SettingsDialog = nullptr;
 
-/*!
+  /*!
  * Input stream related functions and data
  */
 public:
-  bool AddUECPDataFrame(uint8_t *UECPDataFrame, unsigned int length);
-  void WriteDataBuffer(std::vector<ComplexType> &iqsamples);
+  bool AddUECPDataFrame(uint8_t* UECPDataFrame, unsigned int length);
+  void WriteDataBuffer(std::vector<ComplexType>& iqsamples);
   void EndDataBuffer();
 
 private:
   size_t SourceQueuedSamples();
-  bool SourceGetSamples(std::vector<ComplexType> &samples);
+  bool SourceGetSamples(std::vector<ComplexType>& samples);
 
-  cRtlSdrSource                       m_RtlSdrReceiver;
-  cFmDecoder                         *m_FMDecoder;
+  cRtlSdrSource m_RtlSdrReceiver;
+  cFmDecoder* m_FMDecoder = nullptr;
 
-  P8PLATFORM::CMutex                  m_UECPMutex;
-  std::vector<uint8_t>                m_UECPOutputBuffer;
+  std::mutex m_UECPMutex;
+  std::vector<uint8_t> m_UECPOutputBuffer;
 
-  P8PLATFORM::CMutex                  m_AudioSignalMutex;
-  double                              m_PTSNext;
+  std::mutex m_AudioSignalMutex;
+  double m_PTSNext;
 
-  size_t                              m_AudioSourceSize;
-  std::deque<std::vector<ComplexType> >  m_AudioSourceBuffer;
-  P8PLATFORM::CMutex                  m_AudioSourceMutex;
-  P8PLATFORM::CEvent                  m_AudioSourceEvent;
-  bool                                m_AudioSourceEndMarked;
-  bool                                m_AudioSourceBufferWarning;
+  size_t m_AudioSourceSize;
+  std::deque<std::vector<ComplexType>> m_AudioSourceBuffer;
+  std::mutex m_AudioSourceMutex;
+  std::condition_variable m_AudioSourceEvent;
+  bool m_AudioSourceEndMarked;
+  bool m_AudioSourceBufferWarning;
 
-  unsigned int                        m_UniqueIdNextNew;
+  unsigned int m_UniqueIdNextNew;
 };

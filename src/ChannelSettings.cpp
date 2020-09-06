@@ -1,81 +1,68 @@
 /*
- *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
- *      http://kodi.tv
+ *  Copyright (C) 2015-2020, Alwin Esch (Team KODI)
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with KODI; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301  USA
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSE.md for more information.
  */
 
-#include <sstream>
-#include <limits.h>
-#include "p8-platform/util/StringUtils.h"
-
 #include "ChannelSettings.h"
+
 #include "RadioReceiver.h"
+#include "Utils.h"
 
-#define ACTION_NAV_BACK                 92
-#define ACTION_MOUSE_ROLL_UP            104
-#define ACTION_MOUSE_ROLL_DOWN          105
+#include <kodi/ActionIDs.h>
+#include <limits.h>
+#include <sstream>
 
-#define BUTTON_OK                       5
-#define BUTTON_CANCEL                   6
+#define BUTTON_OK 5
+#define BUTTON_CANCEL 6
 
-#define CONTROL_BUTTON_RUN_DOWN         30
-#define CONTROL_BUTTON_DECREASE_1       31
-#define CONTROL_BUTTON_DECREASE_2       32
-#define CONTROL_LABEL_FREQ              33
-#define CONTROL_BUTTON_INCREASE_2       34
-#define CONTROL_BUTTON_INCREASE_1       35
-#define CONTROL_BUTTON_RUN_UP           36
-#define CONTROL_BUTTON_CHANNEL_NAME     37
-#define CONTROL_LABEL_LEVEL             38
+#define CONTROL_BUTTON_RUN_DOWN 30
+#define CONTROL_BUTTON_DECREASE_1 31
+#define CONTROL_BUTTON_DECREASE_2 32
+#define CONTROL_LABEL_FREQ 33
+#define CONTROL_BUTTON_INCREASE_2 34
+#define CONTROL_BUTTON_INCREASE_1 35
+#define CONTROL_BUTTON_RUN_UP 36
+#define CONTROL_BUTTON_CHANNEL_NAME 37
+#define CONTROL_LABEL_LEVEL 38
 
-using namespace ADDON;
 
 cChannelSettings::cChannelSettings()
- : m_window(nullptr)
+  : kodi::gui::CWindow("ChannelTuner.xml", "skin.estuary", true, true)
 {
 }
 
 cChannelSettings::~cChannelSettings()
 {
-  StopThread();
+  m_running = false;
+  if (m_thread.joinable())
+    m_thread.join();
 }
 
-PVR_ERROR cChannelSettings::Open(const PVR_CHANNEL &channel, cRadioReceiver *source, bool addAdjust)
+PVR_ERROR cChannelSettings::Open(const kodi::addon::PVRChannel& channel,
+                                 cRadioReceiver* source,
+                                 bool addAdjust)
 {
-  m_Source    = source;
+  m_Source = source;
   m_addAdjust = addAdjust;
-  m_WasSaved  = false;
+  m_WasSaved = false;
 
   m_ChannelIndex = -1;
   if (m_addAdjust)
   {
     if (m_Source->IsActive())
-      m_CurrentFreq = m_Source->GetSource()->GetFrequency() - 0.25 * m_Source->GetSource()->GetSampleRate();
+      m_CurrentFreq =
+          m_Source->GetSource()->GetFrequency() - 0.25 * m_Source->GetSource()->GetSampleRate();
     else
       m_CurrentFreq = 87500000;
   }
   else
   {
-    std::vector<FMRadioChannel> *channels = m_Source->GetChannelData();
+    std::vector<FMRadioChannel>* channels = m_Source->GetChannelData();
     for (unsigned int iChannelPtr = 0; iChannelPtr < channels->size(); iChannelPtr++)
     {
-      if (channels->at(iChannelPtr).iUniqueId == channel.iUniqueId)
+      if (channels->at(iChannelPtr).iUniqueId == channel.GetUniqueId())
       {
         m_ChannelIndex = iChannelPtr;
         m_CurrentFreq = channels->at(iChannelPtr).fChannelFreq;
@@ -84,37 +71,33 @@ PVR_ERROR cChannelSettings::Open(const PVR_CHANNEL &channel, cRadioReceiver *sou
     }
     if (m_ChannelIndex == -1)
     {
-      XBMC->Log(LOG_ERROR, "channel '%s' id %i unknown", channel.strChannelName, channel.iUniqueId);
+      kodi::Log(ADDON_LOG_ERROR, "channel '%s' id %i unknown", channel.GetChannelName().c_str(),
+                channel.GetUniqueId());
       return PVR_ERROR_INVALID_PARAMETERS;
     }
   }
 
   if (m_Source->IsActive())
-    m_PrevFreq = m_Source->GetSource()->GetFrequency() - 0.25 * m_Source->GetSource()->GetSampleRate();
+    m_PrevFreq =
+        m_Source->GetSource()->GetFrequency() - 0.25 * m_Source->GetSource()->GetSampleRate();
   else
     m_PrevFreq = m_CurrentFreq;
 
-  /* Load the Window as Dialog */
-  m_window = GUI->Window_create("ChannelTuner.xml", "skin.estuary", false, true);
-  m_window->m_cbhdl   = this;
-  m_window->CBOnInit  = OnInitCB;
-  m_window->CBOnFocus = OnFocusCB;
-  m_window->CBOnClick = OnClickCB;
-  m_window->CBOnAction= OnActionCB;
-  m_window->DoModal();
+  DoModal();
 
-  StopThread();
+  m_running = false;
+  if (m_thread.joinable())
+    m_thread.join();
+
   m_Source->RegisterDialog(nullptr);
-
-  GUI->Window_destroy(m_window);
 
   return PVR_ERROR_NO_ERROR;
 }
 
-void *cChannelSettings::Process()
+void cChannelSettings::Process()
 {
   m_AutoTuneIgnore = false;
-  while (!IsStopped())
+  while (m_running)
   {
     if (m_AutoTuneUp)
     {
@@ -133,16 +116,17 @@ void *cChannelSettings::Process()
       UpdateFreq(m_CurrentFreq);
     }
 
-    Sleep(1250);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1250));
     if (!m_Source->IsActive())
       break;
 
     float interfaceLevel;
     float audioLevel;
     bool stereo;
-    if (m_Source->GetSignalStatus(interfaceLevel, audioLevel, stereo))
+    if (m_Source->GetSignalStatus(interfaceLevel, audioLevel, stereo) == PVR_ERROR_NO_ERROR)
     {
-      m_window->SetControlLabel(CONTROL_LABEL_LEVEL, StringUtils::Format("IF=%+5.1fdB Audio=%+5.1fdB", interfaceLevel, audioLevel).c_str());
+      SetControlLabel(CONTROL_LABEL_LEVEL, StringUtils::Format("IF=%+5.1fdB Audio=%+5.1fdB",
+                                                               interfaceLevel, audioLevel));
 
       if ((m_AutoTuneUp || m_AutoTuneDown) && !m_AutoTuneIgnore)
       {
@@ -155,12 +139,12 @@ void *cChannelSettings::Process()
     }
     else
     {
-      m_AutoTuneUp   = false;
+      m_AutoTuneUp = false;
       m_AutoTuneDown = false;
     }
     m_AutoTuneIgnore = false;
   }
-  return nullptr;
+  return;
 }
 
 bool cChannelSettings::OnClick(int controlId)
@@ -203,16 +187,16 @@ bool cChannelSettings::OnClick(int controlId)
       UpdateFreq(m_CurrentFreq);
       m_AutoTuneDown = false;
       m_AutoTuneUp = false;
-       break;
+      break;
     case CONTROL_BUTTON_RUN_UP:
       m_AutoTuneUp = !m_AutoTuneUp;
       m_AutoTuneDown = false;
       m_AutoTuneIgnore = true;
       break;
     case CONTROL_BUTTON_CHANNEL_NAME:
-      {
-      }
-      break;
+    {
+    }
+    break;
     case BUTTON_OK:
       if (m_addAdjust)
       {
@@ -234,12 +218,12 @@ bool cChannelSettings::OnClick(int controlId)
 
       m_Source->SaveChannelData();
       UpdateFreq(m_PrevFreq);
-      m_window->Close();
+      Close();
       m_WasSaved = true;
       break;
     case BUTTON_CANCEL:
       UpdateFreq(m_PrevFreq);
-      m_window->Close();
+      Close();
       break;
     default:
       break;
@@ -260,28 +244,30 @@ bool cChannelSettings::OnInit()
 
   m_Source->RegisterDialog(this);
 
-  m_AutoTuneUp   = false;
+  m_AutoTuneUp = false;
   m_AutoTuneDown = false;
 
   if (m_Source->IsActive())
-    CreateThread();
+  {
+    m_running = true;
+    m_thread = std::thread([&] { Process(); });
+  }
   return true;
 }
 
-bool cChannelSettings::OnAction(int actionId)
+bool cChannelSettings::OnAction(int actionId, uint32_t buttoncode, wchar_t unicode)
 {
   bool ret = false;
 
   switch (actionId)
   {
-    case ACTION_MOUSE_ROLL_UP:
+    case ACTION_MOUSE_WHEEL_UP:
       ret = OnClick(CONTROL_BUTTON_INCREASE_2);
       break;
-    case ACTION_MOUSE_ROLL_DOWN:
+    case ACTION_MOUSE_WHEEL_DOWN:
       ret = OnClick(CONTROL_BUTTON_DECREASE_2);
       break;
-    case ADDON_ACTION_CLOSE_DIALOG:
-    case ADDON_ACTION_PREVIOUS_MENU:
+    case ACTION_PREVIOUS_MENU:
     case ACTION_NAV_BACK:
       ret = OnClick(BUTTON_CANCEL);
       break;
@@ -292,35 +278,11 @@ bool cChannelSettings::OnAction(int actionId)
   return ret;
 }
 
-bool cChannelSettings::OnInitCB(GUIHANDLE cbhdl)
-{
-  cChannelSettings* scanner = static_cast<cChannelSettings*>(cbhdl);
-  return scanner->OnInit();
-}
-
-bool cChannelSettings::OnClickCB(GUIHANDLE cbhdl, int controlId)
-{
-  cChannelSettings* scanner = static_cast<cChannelSettings*>(cbhdl);
-  return scanner->OnClick(controlId);
-}
-
-bool cChannelSettings::OnFocusCB(GUIHANDLE cbhdl, int controlId)
-{
-  cChannelSettings* scanner = static_cast<cChannelSettings*>(cbhdl);
-  return scanner->OnFocus(controlId);
-}
-
-bool cChannelSettings::OnActionCB(GUIHANDLE cbhdl, int actionId)
-{
-  cChannelSettings* scanner = static_cast<cChannelSettings*>(cbhdl);
-  return scanner->OnAction(actionId);
-}
-
 void cChannelSettings::UpdateFreq(uint32_t freq)
 {
   uint32_t newFreq = freq + 0.25 * m_Source->GetSource()->GetSampleRate();
 
-  m_window->SetControlLabel(CONTROL_LABEL_FREQ, StringUtils::Format("%.01f MHz", (float)freq/1000000).c_str());
+  SetControlLabel(CONTROL_LABEL_FREQ, StringUtils::Format("%.01f MHz", (float)freq / 1000000));
   if (m_Source->IsActive())
     m_Source->GetSource()->SetFrequency(newFreq);
 
@@ -330,5 +292,5 @@ void cChannelSettings::UpdateFreq(uint32_t freq)
 void cChannelSettings::UpdateName(std::string name)
 {
   m_Name = name;
-  m_window->SetControlLabel(CONTROL_BUTTON_CHANNEL_NAME, m_Name.c_str());
+  SetControlLabel(CONTROL_BUTTON_CHANNEL_NAME, m_Name);
 }

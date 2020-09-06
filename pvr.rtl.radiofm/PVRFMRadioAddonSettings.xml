@@ -10,62 +10,92 @@
     <channels>
         <channel>
             <uniqueid>11</uniqueid>
-            <freq>88800000.000000</freq>
-            <name>WDR 5   </name>
+            <freq>94200000.000000</freq>
+            <name>bigFM Saarland</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>12</uniqueid>
-            <freq>95100000.000000</freq>
-            <name>WDR 3   </name>
+            <freq>99600000.000000</freq>
+            <name>CityRadio Saarbrücken</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>13</uniqueid>
-            <freq>99200000.000000</freq>
-            <name>WDR 2   </name>
+            <freq>92900000.000000</freq>
+            <name>Classic Rock Radio</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>14</uniqueid>
-            <freq>100600000.000000</freq>
-            <name>WELLE NR</name>
+            <freq>90100000.000000</freq>
+            <name>Deutschlandfunk</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>15</uniqueid>
-            <freq>101300000.000000</freq>
-            <name>WDR 4   </name>
+            <freq>107500000.000000</freq>
+            <name>Deutschlandfunk Kultur</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>16</uniqueid>
-            <freq>102800000.000000</freq>
-            <name>DLF   </name>
+            <freq>101700000.000000</freq>
+            <name>RADIO SALUE</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>17</uniqueid>
-            <freq>101300000.000000</freq>
-            <name>FM 101.3 MHz</name>
+            <freq>102600000.000000</freq>
+            <name>RPR1</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>18</uniqueid>
-            <freq>103300000.000000</freq>
-            <name>FUNKHAUS</name>
+            <freq>88000000.000000</freq>
+            <name>SR 1 EuropaWelle</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>19</uniqueid>
-            <freq>105100000.000000</freq>
-            <name>FM 105.1 MHz</name>
+            <freq>91300000.000000</freq>
+            <name>SR 2 KulturRadio</name>
             <icon></icon>
         </channel>
         <channel>
             <uniqueid>20</uniqueid>
-            <freq>106700000.000000</freq>
-            <name>1LIVE  </name>
+            <freq>95500000.000000</freq>
+            <name>SR 3</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>21</uniqueid>
+            <freq>99100000.000000</freq>
+            <name>SWR 1</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>22</uniqueid>
+            <freq>95500000.000000</freq>
+            <name>SWR 2</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>23</uniqueid>
+            <freq>101100000.000000</freq>
+            <name>SWR 3</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>24</uniqueid>
+            <freq>105600000.000000</freq>
+            <name>SWR 4</name>
+            <icon></icon>
+        </channel>
+        <channel>
+            <uniqueid>25</uniqueid>
+            <freq>103700000.000000</freq>
+            <name>UNSERDING</name>
             <icon></icon>
         </channel>
     </channels>

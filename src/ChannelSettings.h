@@ -1,67 +1,53 @@
-#pragma once
 /*
- *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
- *      http://kodi.tv
+ *  Copyright (C) 2015-2020, Alwin Esch (Team KODI)
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with KODI; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301  USA
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSE.md for more information.
  */
 
-#include "client.h"
-#include <string>
+#pragma once
+
+#include <atomic>
+#include <kodi/addon-instance/pvr/Channels.h>
+#include <kodi/gui/Window.h>
 #include <map>
+#include <string>
+#include <thread>
 
 class cRadioReceiver;
 
-class cChannelSettings : public P8PLATFORM::CThread
+class ATTRIBUTE_HIDDEN cChannelSettings : public kodi::gui::CWindow
 {
 public:
   cChannelSettings();
   virtual ~cChannelSettings();
 
-  PVR_ERROR Open(const PVR_CHANNEL &channel, cRadioReceiver *source, bool addAdjust);
+  PVR_ERROR Open(const kodi::addon::PVRChannel& channel, cRadioReceiver* source, bool addAdjust);
 
   void UpdateName(std::string name);
 
-  bool OnClick(int controlId);
-  bool OnFocus(int controlId);
-  bool OnInit();
-  bool OnAction(int actionId);
-
-  static bool OnClickCB(GUIHANDLE cbhdl, int controlId);
-  static bool OnFocusCB(GUIHANDLE cbhdl, int controlId);
-  static bool OnInitCB(GUIHANDLE cbhdl);
-  static bool OnActionCB(GUIHANDLE cbhdl, int actionId);
+  bool OnClick(int controlId) override;
+  bool OnFocus(int controlId) override;
+  bool OnInit() override;
+  bool OnAction(int actionId, uint32_t buttoncode, wchar_t unicode) override;
 
 protected:
-  virtual void *Process(void);
+  void Process();
 
 private:
   void UpdateFreq(uint32_t freq);
 
-  CAddonGUIWindow  *m_window;
-  int               m_ChannelIndex;
-  uint32_t          m_CurrentFreq;
-  uint32_t          m_PrevFreq;
-  cRadioReceiver   *m_Source;
-  bool              m_addAdjust;
-  bool              m_AutoTuneIgnore;
-  bool              m_AutoTuneUp;
-  bool              m_AutoTuneDown;
-  std::string       m_Name;
-  bool              m_WasSaved;
+  std::atomic<bool> m_running = {false};
+  std::thread m_thread;
+
+  int m_ChannelIndex;
+  uint32_t m_CurrentFreq;
+  uint32_t m_PrevFreq;
+  cRadioReceiver* m_Source;
+  bool m_addAdjust;
+  bool m_AutoTuneIgnore;
+  bool m_AutoTuneUp;
+  bool m_AutoTuneDown;
+  std::string m_Name;
+  bool m_WasSaved;
 };

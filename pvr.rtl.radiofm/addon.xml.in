@@ -6,7 +6,7 @@
   provider-name="Alwin Esch, Team Kodi">
   <requires>@ADDON_DEPENDS@</requires>
   <extension
-    point="xbmc.pvrclient"
+    point="kodi.pvrclient"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">PVR client to connect RTL-SDR as FM Radio to Kodi</summary>

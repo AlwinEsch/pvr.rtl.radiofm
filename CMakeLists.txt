@@ -1,32 +1,21 @@
+cmake_minimum_required(VERSION 3.5)
 project(pvr.rtl.radiofm)
 
-cmake_minimum_required(VERSION 3.4)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/lib/rtl-sdr/cmake/Modules)
-
-enable_language(CXX)
-
+find_package(rtlsdr REQUIRED)
 find_package(TinyXML REQUIRED)
 find_package(Kodi REQUIRED)
-find_package(kodiplatform REQUIRED)
-find_package(p8-platform REQUIRED)
+find_package(libusb-1.0 REQUIRED)
 
-if (NOT WIN32)
-  add_definitions(-DUSE_DEMUX -fPIC -g -O2)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif()
-
-include_directories(${kodiplatform_INCLUDE_DIRS}
-                    ${p8-platform_INCLUDE_DIRS}
+include_directories(${rtlsdr_INCLUDE_DIRS}
                     ${KODI_INCLUDE_DIR}
                     ${TINYXML_INCLUDE_DIRS}
-                    ${PROJECT_SOURCE_DIR}/lib/rtl-sdr/include)
+                    ${LIBUSB_1_INCLUDE_DIRS})
 
-add_subdirectory(lib/rtl-sdr)
-
-set(BASIC_SOURCES src/client.cpp
-                  src/RadioReceiver.cpp
+set(BASIC_SOURCES src/RadioReceiver.cpp
                   src/RTL_SDR_Source.cpp
+                  src/Filter.cpp
                   src/FirFilter.cpp
                   src/IirFilter.cpp
                   src/FmDecode.cpp
@@ -34,12 +23,13 @@ set(BASIC_SOURCES src/client.cpp
                   src/FreqShift.cpp
                   src/RDSGroupDecoder.cpp
                   src/RDSProcess.cpp
-                  src/ChannelSettings.cpp)
+                  src/ChannelSettings.cpp
+                  src/Utils.cpp)
 
 set(BASIC_HEADERS src/ChannelSettings.h
-                  src/client.h
-                  src/Definations.h
+                  src/Definitions.h
                   src/DownConvert.h
+                  src/Filter.h
                   src/FirFilter.h
                   src/FmDecode.h
                   src/FreqShift.h
@@ -47,12 +37,17 @@ set(BASIC_HEADERS src/ChannelSettings.h
                   src/RadioReceiver.h
                   src/RDSGroupDecoder.h
                   src/RDSProcess.h
-                  src/RTL_SDR_Source.h)
+                  src/RTL_SDR_Source.h
+                  src/Utils.h
+                  src/XMLUtils.h
+                  src/filtercoef.h)
 
-set(DEPLIBS ${kodiplatform_LIBRARIES}
-            ${p8-platform_LIBRARIES}
-            ${TINYXML_LIBRARIES}
-            rtlsdr_static)
+set(DEPLIBS ${TINYXML_LIBRARIES}
+            ${RTLSDR_LIBRARIES}
+            ${LIBUSB_1_LIBRARIES})
+
+addon_version(pvr.rtl.radiofm RTL_RADIOFM)
+add_definitions(-DRTL_RADIOFM_VERSION=${RTL_RADIOFM_VERSION})
 
 build_addon(pvr.rtl.radiofm BASIC DEPLIBS)
 

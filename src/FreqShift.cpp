@@ -1,25 +1,8 @@
 /*
- *      Copyright (C) 2015-2018 Alwin Esch (Team KODI)
- *      http://kodi.tv
+ *  Copyright (C) 2015-2020, Alwin Esch (Team KODI)
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with KODI; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301  USA
- *  http://www.gnu.org/copyleft/gpl.html
- *
- *  This part of code is taken from CuteSDR created by Moe Wheatley (Copyright 2010)
- *  and handled by Simplified BSD License
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSE.md for more information.
  */
 
 #include "FreqShift.h"
@@ -27,9 +10,9 @@
 cFreqShift::cFreqShift(RealType NcoFreq, RealType InRate)
 {
   m_NcoTime = 0.0;
-  m_InRate  = InRate;
+  m_InRate = InRate;
   m_NcoFreq = NcoFreq;
-  m_NcoInc  = K_2PI * m_NcoFreq / m_InRate;
+  m_NcoInc = K_2PI * m_NcoFreq / m_InRate;
 }
 
 void cFreqShift::Reset()
@@ -43,16 +26,16 @@ void cFreqShift::Process(ComplexType* pInData, unsigned int InLength)
   ComplexType Osc;
 
 #if (defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(TARGET_WINDOWS))
-  RealType  dPhaseAcc = m_NcoTime;
-  RealType  dASMCos   = 0.0;
-  RealType  dASMSin   = 0.0;
+  RealType dPhaseAcc = m_NcoTime;
+  RealType dASMCos = 0.0;
+  RealType dASMSin = 0.0;
 #endif
 #if TARGET_WINDOWS
-  RealType*  pdCosAns  = &dASMCos;
-  RealType*  pdSinAns  = &dASMSin;
+  RealType* pdCosAns = &dASMCos;
+  RealType* pdSinAns = &dASMSin;
 #endif
 
-//263uS using sin/cos or 70uS using quadrature osc or 200uS using _asm
+  //263uS using sin/cos or 70uS using quadrature osc or 200uS using _asm
   for (unsigned int i = 0; i < InLength; ++i)
   {
     dtmp = pInData[i];
@@ -70,7 +53,7 @@ void cFreqShift::Process(ComplexType* pInData, unsigned int InLength)
     Osc.re = dASMCos;
     Osc.im = dASMSin;
 #elif (defined(__i386__) || defined(__x86_64__))
-    asm volatile ("fsincos" : "=%&t" (dASMCos), "=%&u" (dASMSin) : "0" (dPhaseAcc));
+    asm volatile("fsincos" : "=%&t"(dASMCos), "=%&u"(dASMSin) : "0"(dPhaseAcc));
     dPhaseAcc += m_NcoInc;
     Osc = ComplexType(dASMCos, dASMSin);
 #elif defined(__arm__)
@@ -88,6 +71,6 @@ void cFreqShift::Process(ComplexType* pInData, unsigned int InLength)
 #if (defined(__i386__) || defined(__x86_64__) || defined(TARGET_WINDOWS))
   m_NcoTime = dPhaseAcc;
 #else
-  m_NcoTime = MFMOD(m_NcoTime, K_2PI);  //keep radian counter bounded
+  m_NcoTime = MFMOD(m_NcoTime, K_2PI); //keep radian counter bounded
 #endif
 }

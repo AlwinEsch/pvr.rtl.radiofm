@@ -1,46 +1,33 @@
-#pragma once
 /*
- *      Copyright (C) 2013, Joris van Rantwijk.
- *      Copyright (C) 2015-2018 Team KODI (Alwin Esch)
- *      http://kodi.tv
+ *  Copyright (C) 2013, Joris van Rantwijk.
+ *  Copyright (C) 2015-2020, Alwin Esch (Team KODI)
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this Software; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
- *  Several parts of code are taken from SoftFM created by Joris van Rantwijk
- *  (Copyright 2013) and handled by GNU GPL
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSE.md for more information.
  */
 
-#include <stdint.h>
-#include <vector>
+#pragma once
 
 #include "DownConvert.h"
 #include "FirFilter.h"
 #include "IirFilter.h"
 #include "RDSProcess.h"
 
-#define DEFAULT_DEEMPHASIS         50.0
-#define DEFAULT_BANDWIDTH_IF   100000.0
-#define DEFAULT_FREQ_DEV        60000.0
-#define DEFAULT_BANDWIDTH_PCM   15000.0
-#define PILOT_FREQ              19000.0
+#include <stdint.h>
+#include <vector>
+
+#define PHZBUF_SIZE 16384
+
+#define DEFAULT_DEEMPHASIS 50.0
+#define DEFAULT_BANDWIDTH_IF 100000.0
+#define DEFAULT_FREQ_DEV 60000.0
+#define DEFAULT_BANDWIDTH_PCM 15000.0
+#define PILOT_FREQ 19000.0
 
 class cRadioReceiver;
 
 /** Fine tuner which shifts the frequency of an IQ signal by a fixed offset. */
-class cFineTuner
+class ATTRIBUTE_HIDDEN cFineTuner
 {
 public:
   /*!
@@ -56,16 +43,16 @@ public:
   virtual ~cFineTuner();
 
   /*! Process samples. */
-  void Process(const ComplexType *samples_in, ComplexType *samples_out, unsigned int samples);
+  void Process(const ComplexType* samples_in, ComplexType* samples_out, unsigned int samples);
 
 private:
-  unsigned int    m_index;
-  ComplexType    *m_table;
-  unsigned int    m_tableSize;
+  unsigned int m_index;
+  ComplexType* m_table;
+  unsigned int m_tableSize;
 };
 
 /*! Phase-locked loop for stereo pilot. */
-class cPilotPhaseLock
+class ATTRIBUTE_HIDDEN cPilotPhaseLock
 {
 public:
   /*!
@@ -82,29 +69,26 @@ public:
    * Process samples and extract 19 kHz pilot tone.
    * Generate phase-locked 38 kHz tone with unit amplitude.
    */
-  bool Process(const RealType *samples_in, RealType *samples_out, unsigned int length);
+  bool Process(const RealType* samples_in, RealType* samples_out, unsigned int length);
 
   /*! Return detected amplitude of pilot signal. */
-  RealType GetPilotLevel() const
-  {
-    return 2 * m_pilotLevel;
-  }
+  RealType GetPilotLevel() const { return 2 * m_pilotLevel; }
 
 private:
-  RealType  m_minfreq, m_maxfreq;
-  RealType  m_phasor_b0, m_phasor_a1, m_phasor_a2;
-  RealType  m_phasor_i1, m_phasor_i2, m_phasor_q1, m_phasor_q2;
-  RealType  m_loopfilter_b0, m_loopfilter_b1;
-  RealType  m_loopfilter_x1;
-  RealType  m_freq, m_phase;
-  RealType  m_minsignal;
-  RealType  m_pilotLevel;
-  int     m_lock_delay;
-  int     m_lock_cnt;
+  RealType m_minfreq, m_maxfreq;
+  RealType m_phasor_b0, m_phasor_a1, m_phasor_a2;
+  RealType m_phasor_i1, m_phasor_i2, m_phasor_q1, m_phasor_q2;
+  RealType m_loopfilter_b0, m_loopfilter_b1;
+  RealType m_loopfilter_x1;
+  RealType m_freq, m_phase;
+  RealType m_minsignal;
+  RealType m_pilotLevel;
+  int m_lock_delay;
+  int m_lock_cnt;
 };
 
 /*! Complete decoder for FM broadcast signal. */
-class cFmDecoder
+class ATTRIBUTE_HIDDEN cFmDecoder
 {
 public:
   /*!
@@ -123,13 +107,13 @@ public:
    * downsample       :: Downsampling factor to apply after FM demodulation.
    *                     Set to 1 to disable.
    */
-  cFmDecoder(cRadioReceiver *proc,
-            double sample_rate_if,
-            double tuning_offset,
-            double sample_rate_pcm,
-            double bandwidth_pcm=DEFAULT_BANDWIDTH_PCM,
-            unsigned int downsample=1,
-            bool USver=false);
+  cFmDecoder(cRadioReceiver* proc,
+             double sample_rate_if,
+             double tuning_offset,
+             double sample_rate_pcm,
+             double bandwidth_pcm = DEFAULT_BANDWIDTH_PCM,
+             unsigned int downsample = 1,
+             bool USver = false);
 
   virtual ~cFmDecoder();
 
@@ -148,15 +132,12 @@ public:
    * size and is always enough)
    * @return the amount of present samples in audio
    */
-  unsigned int ProcessStream(const ComplexType *samples_in, unsigned int samples, float *audio);
+  unsigned int ProcessStream(const ComplexType* samples_in, unsigned int samples, float* audio);
 
   /*!
    * Return true if a stereo signal is detected.
    */
-  bool StereoDetected() const
-  {
-    return m_StereoDetected;
-  }
+  bool StereoDetected() const { return m_StereoDetected; }
 
   /*!
    * Return actual frequency offset in Hz with respect to receiver LO.
@@ -164,85 +145,81 @@ public:
    */
   RealType GetTuningOffset() const
   {
-    RealType tuned = - m_TuningShift * m_SampleRate_Interface / RealType(m_TuningTableSize);
+    RealType tuned = -m_TuningShift * m_SampleRate_Interface / RealType(m_TuningTableSize);
     return tuned + m_BasebandMean * m_FrequencyDev;
   }
 
   /*!
    * Return RMS IF level (where full scale IQ signal is 1.0).
    */
-  RealType GetInterfaceLevel() const
-  {
-    return m_InterfaceLevel;
-  }
+  RealType GetInterfaceLevel() const { return m_InterfaceLevel; }
 
   /*!
    * Return RMS baseband signal level (where nominal level is 0.707).
    */
-  RealType GetBasebandLevel() const
-  {
-    return m_BasebandLevel;
-  }
+  RealType GetBasebandLevel() const { return m_BasebandLevel; }
 
   /*!
    * Return amplitude of stereo pilot (nominal level is 0.1).
    */
-  RealType GetPilotLevel() const
-  {
-    return m_PilotPLL.GetPilotLevel();
-  }
+  RealType GetPilotLevel() const { return m_PilotPLL.GetPilotLevel(); }
 
 private:
   void InitDeemphasis(RealType Time, RealType SampleRate);
 
-  inline void SamplesMeanRMS(const RealType* samples, RealType& mean, RealType& rms, unsigned int n);
-  inline ComplexType::value_type RMSLevelApprox(const ComplexType *samples, unsigned int length);
+  inline void SamplesMeanRMS(const RealType* samples,
+                             RealType& mean,
+                             RealType& rms,
+                             unsigned int n);
+  inline ComplexType::value_type RMSLevelApprox(const ComplexType* samples, unsigned int length);
   inline void ProcessDeemphasisFilter(RealType* bufferA, RealType* bufferB, unsigned int length);
-  inline void PhaseLockedLoop(ComplexType *signal, RealType *out, unsigned int dataSize);
+  inline void PhaseLockedLoop(ComplexType* signal, RealType* out, unsigned int dataSize);
 
-  cRadioReceiver           *m_proc;
-  const RealType            m_SampleRate_Interface;
-  const RealType            m_SampleRate_Baseband;
-  const int                 m_TuningTableSize;
-  const int                 m_TuningShift;
-  const RealType            m_FrequencyDev;
-  const unsigned int        m_Downsample;
-  const RealType            m_BandwidthInterface;
+  cRadioReceiver* const m_proc;
+  const RealType m_SampleRate_Interface;
+  const RealType m_SampleRate_Baseband;
+  const int m_TuningTableSize;
+  const int m_TuningShift;
+  const RealType m_FrequencyDev;
+  const unsigned int m_Downsample;
+  const RealType m_BandwidthInterface;
 
-  bool                      m_StereoDetected;
-  RealType                  m_InterfaceLevel;
-  RealType                  m_BasebandMean;
-  RealType                  m_BasebandLevel;
-  RealType                  m_AudioLevel;
-  RealType                  m_FMDeModGain;
+  bool m_StereoDetected;
+  RealType m_InterfaceLevel;
+  RealType m_BasebandMean;
+  RealType m_BasebandLevel;
+  RealType m_AudioLevel;
+  RealType m_FMDeModGain;
 
-  ComplexType              *m_BufferIfTuned;
-  ComplexType              *m_BufferDemod;
-  RealType                 *m_BufferBaseband;
-  RealType                 *m_BufferMono;
-  RealType                 *m_BufferStereo;
-  RealType                 *m_BufferRawStereo;
+  ComplexType* m_BufferIfTuned;
+  ComplexType* m_BufferDemod;
+  RealType* m_BufferBaseband;
+  RealType* m_BufferMono;
+  RealType* m_BufferStereo;
+  RealType* m_BufferRawStereo;
 
-  cFineTuner                m_FineTuner;
-  cPilotPhaseLock           m_PilotPLL;
-  cDownsampleFilter         m_ReSampleInput;
-  cDownsampleFilter         m_ReSampleMono;
-  cDownsampleFilter         m_ReSampleStereo;
-  cRDSRxSignalProcessor     m_RDSProcess;
-  cIirFilter                m_DCBlock;
-  cIirFilter                m_NotchFilter;
-  cFirFilter                m_LPFilter;
-  cFirFilter                m_InputLPFilter;
+  cFineTuner m_FineTuner;
+  cPilotPhaseLock m_PilotPLL;
+  cDownsampleFilter m_ReSampleInput;
+  cDownsampleFilter m_ReSampleMono;
+  cDownsampleFilter m_ReSampleStereo;
+  cRDSRxSignalProcessor m_RDSProcess;
+  cIirFilter m_DCBlock;
+  cIirFilter m_NotchFilter;
+  cFirFilter m_LPFilter;
+  cFirFilter m_InputLPFilter;
 
-  RealType                  m_DeemphasisAveRe;
-  RealType                  m_DeemphasisAveIm;
-  RealType                  m_DeemphasisAlpha;
+  cFirFilter m_HilbertFilter;
 
-  RealType                  m_NcoPhase;
-  RealType                  m_NcoPhaseIncr;
-  RealType                  m_NcoHLimit;
-  RealType                  m_NcoLLimit;
-  RealType                  m_PLLAlpha;
-  RealType                  m_PLLBeta;
-  RealType                  m_DemodDCOffset;
+  RealType m_DeemphasisAveRe;
+  RealType m_DeemphasisAveIm;
+  RealType m_DeemphasisAlpha;
+
+  RealType m_NcoPhase;
+  RealType m_NcoPhaseIncr;
+  RealType m_NcoHLimit;
+  RealType m_NcoLLimit;
+  RealType m_PLLAlpha;
+  RealType m_PLLBeta;
+  RealType m_DemodDCOffset;
 };
