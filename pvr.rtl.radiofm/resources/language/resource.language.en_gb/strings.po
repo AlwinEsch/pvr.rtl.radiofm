@@ -1,19 +1,19 @@
 # XBMC Media Center language file
 # Addon Name: RTL SDR FM Radio Client
 # Addon id: pvr.rtl.radiofm
-# Addon Provider: Alwin Esch, Team XBMC
+# Addon Provider: Alwin Esch, Team Kodi
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC Main\n"
-"Report-Msgid-Bugs-To: http://trac.xbmc.org/\n"
+"Project-Id-Version: pvr.rtl.radiofm\n"
+"Report-Msgid-Bugs-To: https://github.com/AlwinEsch/pvr.rtl.radiofm/issues\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: XBMC Translation Team\n"
-"Language-Team: English (http://www.transifex.com/projects/p/xbmc-main/language/en/)\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/xbmc-addons/language/en_GB/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
+"Language: en_GB\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #settings labels
