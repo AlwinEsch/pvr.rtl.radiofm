@@ -24,5 +24,7 @@ ATTENTION: Complete processing is performed with CPU and need better performance
     <disclaimer lang="de_DE">Das ist instabile Software! Die Autoren sind in keiner Weise für ausgefallene Kanäle oder andere unerwünschte Effekte verantwortlich.</disclaimer>
     <disclaimer lang="en_GB">This is unstable software! The authors are in no way responsible for failed channels or any other undesirable effects.</disclaimer>
     <platform>all</platform>
+    <license>GPL-2.0-or-later</license>
+    <source>https://github.com/AlwinEsch/pvr.rtl.radiofm</source>
   </extension>
 </addon>
