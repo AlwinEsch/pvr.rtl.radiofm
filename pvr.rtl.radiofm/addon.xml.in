@@ -9,8 +9,19 @@
     point="kodi.pvrclient"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
+    <summary lang="de_DE">PVR-Client zum Verbinden von RTL-SDR als FM-Radio mit Kodi</summary>
     <summary lang="en_GB">PVR client to connect RTL-SDR as FM Radio to Kodi</summary>
-    <description lang="en_GB">RTL-SDR frontend; supporting streaming of FM Radio. ATTENTION: Complete processing is performed with CPU and need better performance of it!</description>
+    <description lang="de_DE">RTL-SDR-Frontend; Unterstützung des Streamings von FM-Radio.
+
+DVB-T-Dongles, die auf dem Realtek RTL2832U basieren, können als billiger SDR verwendet werden, da der Chip die Übertragung der rohen I/Q-Samples auf den Host ermöglicht, der hier offiziell für die FM-Demodulation verwendet wird.
+
+ACHTUNG: Die vollständige Verarbeitung erfolgt mit der CPU und erfordert eine bessere Leistung!</description>
+    <description lang="en_GB">RTL-SDR frontend; supporting streaming of FM Radio.
+
+DVB-T dongles based on the Realtek RTL2832U can be used as a cheap SDR, since the chip allows transferring the raw I/Q samples to the host, which is officially used for FM demodulation here.
+
+ATTENTION: Complete processing is performed with CPU and need better performance of it!</description>
+    <disclaimer lang="de_DE">Das ist instabile Software! Die Autoren sind in keiner Weise für ausgefallene Kanäle oder andere unerwünschte Effekte verantwortlich.</disclaimer>
     <disclaimer lang="en_GB">This is unstable software! The authors are in no way responsible for failed channels or any other undesirable effects.</disclaimer>
     <platform>all</platform>
   </extension>

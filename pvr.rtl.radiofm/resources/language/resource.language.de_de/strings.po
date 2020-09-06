@@ -1,0 +1,67 @@
+# XBMC Media Center language file
+# Addon Name: RTL SDR FM Radio Client
+# Addon id: pvr.rtl.radiofm
+# Addon Provider: Alwin Esch, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: pvr.rtl.radiofm\n"
+"Report-Msgid-Bugs-To: https://github.com/AlwinEsch/pvr.rtl.radiofm/issues\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: German (Germany) (http://www.transifex.com/projects/p/xbmc-addons/language/de_DE/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#settings labels
+
+msgctxt "#30010"
+msgid "Channel tuner"
+msgstr "Kanaltuner"
+
+msgctxt "#30011"
+msgid "OK"
+msgstr "OK"
+
+msgctxt "#30012"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt "#30020"
+msgid "+0.01"
+msgstr "+0.01"
+
+msgctxt "#30021"
+msgid "-0.01"
+msgstr "-0.01"
+
+msgctxt "#30022"
+msgid "+0.1"
+msgstr "+0.1"
+
+msgctxt "#30023"
+msgid "-0.1"
+msgstr "-0.1"
+
+msgctxt "#30024"
+msgid "-1.0"
+msgstr "-1.0"
+
+msgctxt "#30025"
+msgid "+1.0"
+msgstr "+1.0"
+
+msgctxt "#30026"
+msgid "<<"
+msgstr "<<"
+
+msgctxt "#30027"
+msgid ">>"
+msgstr ">>"
+
+msgctxt "#30031"
+msgid "Signal: %i %%"
+msgstr "Signal: %i %%"
