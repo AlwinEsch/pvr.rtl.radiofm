@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="pvr.rtl.radiofm"
-  version="0.0.12"
+  version="0.1.0"
   name="RTL-SDR FM Radio Client"
   provider-name="Alwin Esch, Team Kodi">
   <requires>@ADDON_DEPENDS@</requires>
