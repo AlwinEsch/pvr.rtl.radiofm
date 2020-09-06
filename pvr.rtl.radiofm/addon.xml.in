@@ -26,5 +26,8 @@ ATTENTION: Complete processing is performed with CPU and need better performance
     <platform>all</platform>
     <license>GPL-2.0-or-later</license>
     <source>https://github.com/AlwinEsch/pvr.rtl.radiofm</source>
+    <assets>
+      <fanart>resources/fanart.jpg</fanart>
+    </assets>
   </extension>
 </addon>
