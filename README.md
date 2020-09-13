@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/AlwinEsch/pvr.rtl.radiofm.svg?branch=Matrix)](https://travis-ci.com/AlwinEsch/pvr.rtl.radiofm/branches)
+
 # pvr.rtl.radiofm
 FM Radio receiver based upon RTL-SDR as pvr addon for KODI
 
