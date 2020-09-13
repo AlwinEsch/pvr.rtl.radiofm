@@ -1,3 +1,4 @@
+[![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2+-blue.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.com/AlwinEsch/pvr.rtl.radiofm.svg?branch=Matrix)](https://travis-ci.com/AlwinEsch/pvr.rtl.radiofm/branches)
 
 # pvr.rtl.radiofm
