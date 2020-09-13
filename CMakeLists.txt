@@ -42,18 +42,18 @@ set(BASIC_HEADERS src/ChannelSettings.h
                   src/XMLUtils.h
                   src/filtercoef.h)
 
-set(DEPLIBS ${TINYXML_LIBRARIES}
-            ${RTLSDR_LIBRARIES}
-            ${LIBUSB_1_LIBRARIES})
-
 if(CORE_SYSTEM_NAME STREQUAL osx OR
    CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   find_library(COREFOUNDATION CoreFoundation)
+  find_library(IOK IOKit)
 
-  include_directories(${COREFOUNDATION})
-
-  list(APPEND DEPLIBS ${COREFOUNDATION})
+  list(APPEND DEPLIBS ${COREFOUNDATION} ${IOK})
+  set(CMAKE_EXE_LINKER_FLAGS "-lobjc -framework IOKit -framework CoreFoundation")
 endif()
+
+list(APPEND DEPLIBS  ${TINYXML_LIBRARIES}
+                     ${RTLSDR_LIBRARIES}
+                     ${LIBUSB_1_LIBRARIES})
 
 addon_version(pvr.rtl.radiofm RTL_RADIOFM)
 add_definitions(-DRTL_RADIOFM_VERSION=${RTL_RADIOFM_VERSION})
