@@ -46,6 +46,15 @@ set(DEPLIBS ${TINYXML_LIBRARIES}
             ${RTLSDR_LIBRARIES}
             ${LIBUSB_1_LIBRARIES})
 
+if(CORE_SYSTEM_NAME STREQUAL osx OR
+   CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+  find_library(COREFOUNDATION CoreFoundation)
+
+  include_directories(${COREFOUNDATION})
+
+  list(APPEND DEPLIBS ${COREFOUNDATION})
+endif()
+
 addon_version(pvr.rtl.radiofm RTL_RADIOFM)
 add_definitions(-DRTL_RADIOFM_VERSION=${RTL_RADIOFM_VERSION})
 
