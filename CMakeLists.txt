@@ -9,7 +9,7 @@ find_package(Kodi REQUIRED)
 find_package(libusb-1.0 REQUIRED)
 
 include_directories(${rtlsdr_INCLUDE_DIRS}
-                    ${KODI_INCLUDE_DIR}
+                    ${KODI_INCLUDE_DIR}/..
                     ${TINYXML_INCLUDE_DIRS}
                     ${LIBUSB_1_INCLUDE_DIRS})
 
