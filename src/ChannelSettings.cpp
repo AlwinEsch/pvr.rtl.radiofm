@@ -10,7 +10,6 @@
 #include "RadioReceiver.h"
 #include "Utils.h"
 
-#include <kodi/ActionIDs.h>
 #include <limits.h>
 #include <sstream>
 
@@ -255,20 +254,20 @@ bool cChannelSettings::OnInit()
   return true;
 }
 
-bool cChannelSettings::OnAction(int actionId, uint32_t buttoncode, wchar_t unicode)
+bool cChannelSettings::OnAction(ADDON_ACTION actionId)
 {
   bool ret = false;
 
   switch (actionId)
   {
-    case ACTION_MOUSE_WHEEL_UP:
+    case ADDON_ACTION_MOUSE_WHEEL_UP:
       ret = OnClick(CONTROL_BUTTON_INCREASE_2);
       break;
-    case ACTION_MOUSE_WHEEL_DOWN:
+    case ADDON_ACTION_MOUSE_WHEEL_DOWN:
       ret = OnClick(CONTROL_BUTTON_DECREASE_2);
       break;
-    case ACTION_PREVIOUS_MENU:
-    case ACTION_NAV_BACK:
+    case ADDON_ACTION_PREVIOUS_MENU:
+    case ADDON_ACTION_NAV_BACK:
       ret = OnClick(BUTTON_CANCEL);
       break;
     default:
