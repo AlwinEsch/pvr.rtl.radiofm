@@ -28,7 +28,7 @@ matrix:
       osx_image: xcode10.2
 
 before_install:
-  - if [[ $TRAVIS_OS_NAME == linux ]]; then sudo apt-get install -y libudev-dev; fi
+  - if [[ $DEBIAN_BUILD != true ]] && [[ $TRAVIS_OS_NAME == linux ]]; then sudo apt-get install -y libudev-dev; fi
   - if [[ $DEBIAN_BUILD == true ]]; then sudo add-apt-repository -y ppa:team-xbmc/xbmc-nightly; fi
   - if [[ $DEBIAN_BUILD == true ]]; then sudo apt-get update; fi
   - if [[ $DEBIAN_BUILD == true ]]; then sudo apt-get install fakeroot; fi
