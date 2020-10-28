@@ -344,7 +344,7 @@ bool cRadioReceiver::OpenLiveStream(const kodi::addon::PVRChannel& channel)
 
   m_StreamChange = true;
   m_StreamActive = true;
-  m_PTSNext = DVD_TIME_BASE;
+  m_PTSNext = STREAM_TIME_BASE;
 
   m_FMDecoder->Reset();
 
@@ -459,10 +459,10 @@ bool cRadioReceiver::SourceGetSamples(std::vector<ComplexType>& samples)
   return false;
 }
 
-DemuxPacket* cRadioReceiver::DemuxRead()
+DEMUX_PACKET* cRadioReceiver::DemuxRead()
 {
   unsigned int iSize = 0;
-  DemuxPacket* pPacket = nullptr;
+  DEMUX_PACKET* pPacket = nullptr;
 
   /*!
    * Handle stream change
@@ -470,7 +470,7 @@ DemuxPacket* cRadioReceiver::DemuxRead()
   if (m_StreamChange)
   {
     pPacket = kodi::addon::CInstancePVRClient::AllocateDemuxPacket(iSize);
-    pPacket->iStreamId = DMX_SPECIALID_STREAMCHANGE;
+    pPacket->iStreamId = DEMUX_SPECIALID_STREAMCHANGE;
     m_StreamChange = false;
     return pPacket;
   }
@@ -528,7 +528,7 @@ DemuxPacket* cRadioReceiver::DemuxRead()
     SamplesMeanRMS((float*)pPacket->pData, audio_mean, audio_rms, iSize); //!< Measure audio level.
     m_AudioLevel = 0.95 * m_AudioLevel + 0.05 * audio_rms;
 
-    double duration = (double)(iSize)*DVD_TIME_BASE / 2 / OUTPUT_SAMPLERATE;
+    double duration = (double)(iSize) * STREAM_TIME_BASE / 2 / OUTPUT_SAMPLERATE;
 
     pPacket->iStreamId = 1;
     pPacket->iSize = iSize * sizeof(float);
