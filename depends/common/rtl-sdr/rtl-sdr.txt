@@ -1,1 +1,1 @@
-rtl-sdr git://git.osmocom.org/rtl-sdr.git ed0317e6
+rtl-sdr https://github.com/osmocom/rtl-sdr 0847e93e0869feab50fd27c7afeb85d78ca04631
